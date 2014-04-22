@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Movie Recommendations</title>
+	<link href='http://fonts.googleapis.com/css?family=Roboto:500' rel='stylesheet' type='text/css'>
+	<link rel="stylesheet" href="css/style.css">
+	<script type='application/javascript' src='scripts/fastclick.js'></script>
+	<script>
+		window.addEventListener('load', function() {
+	    FastClick.attach(document.body);
+		}, false);
+	</script>
+</head>
+<body>
+	<nav>
+		<a href="#" class="about">About</a>
+		<a id="nominate" class="button">Suggest Movies</a>
+	</nav>
+	<div id="centre">
+		<div class="header">
+			<div class="logo"></div>
+		</div>
+		<h1 id="tagline">Find movies that match your interests.</h1>
+		<div id="tagbox">
+			<ul id="list"></ul>
+		</div>
+		<!-- <a class="shuffle"></a> -->
+		<div class="buttons">
+			<a id="submit" class="button">Get Movie</a>
+		</div>
+	</div>
+	<script src="scripts/script.js"></script>
+</body>
+</html>

@@ -1,5 +1,5 @@
 <?php
-include("config.php");
+include("../../config.php");
 $htmlBody = <<<END
 <form method="GET">
   <div>
@@ -13,8 +13,8 @@ END;
 // and submitted the form. Otherwise, the page displays the form above.
 if ($_GET['q']) {
   // Call set_include_path() as needed to point to your client library.
-require_once '../Google/Client.php';
-require_once '../Google/Service/YouTube.php';
+require_once 'Google/Client.php';
+require_once 'Google/Service/YouTube.php';
 
   /*
    * Set $DEVELOPER_KEY to the "API key" value from the "Access" tab of the

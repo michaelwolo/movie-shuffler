@@ -92,7 +92,7 @@ nav {
 #tagbox {
 	display: inline-block;
 	width: 100%;
-	height: 166px;
+	min-height: 166px;
 	margin: 0 auto;
 	padding: 5px 15px;
 	background: -webkit-radial-gradient(top,rgba(0,0,0,0.2), rgba(0,0,0,0.1));
@@ -292,6 +292,28 @@ input {
 	margin: 0 0 0 20px;
 	text-align: left
 }
+
+/* Responsive Video CSS Snippet */
+
+.video-container {
+	position: relative;
+	padding-bottom: 56.25%; /* 16:9 */
+	padding-top: 30px;
+	height: 0;
+	overflow: hidden;
+}
+.video-container iframe,  
+.video-container object,  
+.video-container embed {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+}
+
+/* CSS Animations */
+
 .fadein-line {
 	-webkit-animation: fadein-tagline 0.15s ease-out forwards;
 		 -moz-animation: fadein-tagline 0.15s ease-out forwards;

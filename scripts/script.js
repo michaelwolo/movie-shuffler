@@ -3,7 +3,7 @@ window.onload = function () {
 	// [].forEach.call(tags, function (tag) {
 	// 	tag.addEventListener('click',activate,false);
 	// });
-	request('POST','../new/scripts/tags.php',null,callback);
+	request('POST','scripts/tags.php',null,callback);
 	function callback(request) {
 		if (request.readyState === 4) {
 			var tags = JSON.parse(request.responseText)
@@ -109,7 +109,7 @@ function suggest(e) {
 	prefixEvent(centre,'AnimationEnd',fadein);
 }
 function home(e) {
-	request('POST','../new/scripts/tags.php',null,callback);
+	request('POST','scripts/tags.php',null,callback);
 	console.log('AJAX call was sent, show loading image.')
 	function callback(request) {
 		if (request.readyState === 4) {
@@ -179,7 +179,7 @@ function searchTerm(e) {
 	  , results = document.getElementById('results')
 	  , info = 'search=' + searchTerm;
 	if (searchTerm) {
-		request('POST','../scripts/search.php',info,callback);
+		request('POST','scripts/search.php',info,callback);
 		document.getElementById('term').value = '';
 		function callback(request) {
 			if (request.readyState === 4) {
@@ -255,14 +255,14 @@ function nomination(e) {
 	wrap.appendChild(h1);
 	wrap.appendChild(tagbox);
 	wrap.appendChild(buttons);
-	request('POST','../scripts/tags.php',null,callback);
+	request('POST','scripts/tags.php',null,callback);
 	console.log('AJAX call was sent, show loading image.')
 	function callback(request) {
 		if (request.readyState === 4) {
 			var tags = JSON.parse(request.responseText);
 			for (var i = 0; i < tags.length; i++) {
 				var tag = tags[i];
-				addTag(tag);
+				addTag(tag, ul);
 			}
 		}
 	}

@@ -1,13 +1,13 @@
 <?php
 
-include("config.php");
+include("../../config.php");
 header('Content-type: application/json');
-$mysqli = new mysqli("localhost",$db_username,$db_password,$db_username);
+$mysqli = new mysqli("localhost",$dbuser,$dbpass,$dbname);
 if($mysqli->connect_errno) {
   echo "Connection Failed: " . $mysqli->connect_errno;
 }
 
-$query = "SELECT `Tag` FROM `TAGS` ORDER BY RAND();";
+$query = "SELECT `Tag` FROM `tags` ORDER BY RAND();";
 
 $result = $mysqli->query($query);
 

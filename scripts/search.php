@@ -1,5 +1,5 @@
 <?php
-	include("config.php");
+	include("../../config.php");
 	header('Content-type: text/xml');
 	$search=$_POST["search"];
 

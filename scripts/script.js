@@ -179,21 +179,21 @@ function searchTerm(e) {
 	  , results = document.getElementById('results')
 	  , info = 'search=' + searchTerm;
 	if (searchTerm) {
-		request('POST','scripts/search.php',info,callback);
+		request('POST','scripts/search.php',info,movies);
 		document.getElementById('term').value = '';
-		function callback(request) {
-			if (request.readyState === 4) {
-				var movies = request.responseXML.getElementsByTagName("movie");
-				while (results.firstChild) {
-					results.removeChild(results.firstChild);
-				}
-				for (var i = 0; i < movies.length; i++) {
-					var title = request.responseXML.getElementsByTagName("title")[i].firstChild.nodeValue
-					  , year = request.responseXML.getElementsByTagName("year")[i].firstChild.nodeValue
-					  , poster = request.responseXML.getElementsByTagName("poster")[i].firstChild.nodeValue;
-					addResult(title, year, poster);
-				}
-			}
+	}
+}
+function movies(request) {
+	if (request.readyState === 4) {
+		var movies = JSON.parse(request.responseText);
+		while (results.firstChild) {
+			results.removeChild(results.firstChild);
+		}
+		for (var i = 0; i < movies.length; i++) {
+			var title = movies[i].title
+			  , year = movies[i].year
+			  , poster = movies[i].poster;
+			addResult(title, year, poster);
 		}
 	}
 }

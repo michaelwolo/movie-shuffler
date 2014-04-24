@@ -1,11 +1,10 @@
 <?php
 	include("../../config.php");
-	header('Content-type: text/xml');
+	// header('Content-type: text/xml');
+	header('Content-type: application/json');
 	$search=$_POST["search"];
-
 	$q = urlencode($search);
 	$num = 5;
-
 	$endpoint = 'http://api.rottentomatoes.com/api/public/v1.0/movies.json?apikey='.$rtkey.'&q='.$q.'&page_limit='.$num;
 	$session = curl_init($endpoint);
 	
@@ -18,9 +17,11 @@
 
 	$movies = $search_results->movies;
 
-	echo "<response>";
+	$json = "[";
 	foreach ($movies as $movie) {
-	  echo "<movie><title>" . $movie->title . "</title><year>" . $movie->year . "</year><poster>" . $movie->posters->profile . "</poster></movie>";
+	  $json .= '{"title":"' . $movie->title . '","year":"' . $movie->year . '","poster":"' . $movie->posters->profile . '"},';
 	}
-	echo "</response>";
+	$json = substr($json, 0, -1);
+	$json .= "]";
+	echo $json;
 ?>

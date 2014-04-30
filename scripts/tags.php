@@ -7,7 +7,7 @@ if($mysqli->connect_errno) {
   echo "Connection Failed: " . $mysqli->connect_errno;
 }
 
-$query = "SELECT `Tag` FROM `tags` ORDER BY RAND();";
+$query = "SELECT DISTINCT `ID`,`Tag` FROM `tags` ORDER BY RAND()";
 
 $result = $mysqli->query($query);
 

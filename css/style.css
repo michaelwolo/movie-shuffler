@@ -32,7 +32,7 @@ nav {
 	ms-transform: translate(-50%, -50%);
 	transform: translate(-50%, -50%);
 }
-#centre h1 {
+#tagline {
 	margin: -1px 0 25px 5px;
 	font: normal 16px 'Roboto', Helvetica, Arial, sans-serif;
 	text-align: center;
@@ -841,7 +841,7 @@ input {
 	}
 }
 @-moz-document url-prefix() {
-    .tag {
+    .tag, .active {
       padding: 8px 10px 9px;
     }
 }

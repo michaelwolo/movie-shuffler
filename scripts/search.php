@@ -1,6 +1,5 @@
 <?php
 	include("../../config.php");
-	// header('Content-type: text/xml');
 	header('Content-type: application/json');
 	$search=$_POST["search"];
 	$q = urlencode($search);
@@ -19,7 +18,7 @@
 
 	$json = "[";
 	foreach ($movies as $movie) {
-	  $json .= '{"title":"' . $movie->title . '","year":"' . $movie->year . '","poster":"' . $movie->posters->profile . '"},';
+	  $json .= '{"title":"' . $movie->title . '","year":"' . $movie->year . '","poster":"' . $movie->posters->profile . '","rating":"' . $movie->ratings->critics_score . '"},';
 	}
 	$json = substr($json, 0, -1);
 	$json .= "]";

@@ -48,7 +48,10 @@ function activate(e) {
 	if (!submit.classList.contains('glowing'))
 		submit.classList.add('glowing');
 	if (!active.length) {
-		changeText(tagline, 'Submit your tags to get a recommendation.');
+		if (/\bothers\b/.test(tagline.innerHTML))
+			changeText(tagline, 'Submit your tags when you\'re ready.');
+		else
+			changeText(tagline, 'Submit your tags to get a recommendation.');
 	}
 }
 function deactivate(e) {
@@ -59,7 +62,10 @@ function deactivate(e) {
 	e.target.removeEventListener('click',deactivate,false);
 	e.target.addEventListener('click',activate,false);
 	if (active.length === 1) {
-		changeText(tagline, 'Find movies that match your interests.');
+		if (/\brecommendation\b/.test(tagline.innerHTML))
+			changeText(tagline, 'Find movies that match your interests.');
+		else
+			changeText(tagline, 'Tag this movie for others to discover.');
 	}
 }
 function changeText(elem, text) {
@@ -185,17 +191,27 @@ function searchTerm(e) {
 }
 function movies(request) {
 	if (request.readyState === 4) {
-		var movies = JSON.parse(request.responseText);
+		var movies = JSON.parse(request.responseText)
+		  , ranked = objectSort(movies, 'rating'); // Fix "Frozen" Issue
 		while (results.firstChild) {
 			results.removeChild(results.firstChild);
 		}
-		for (var i = 0; i < movies.length; i++) {
-			var title = movies[i].title
-			  , year = movies[i].year
-			  , poster = movies[i].poster;
-			addResult(title, year, poster);
+		for (var i = 0; i < ranked.length; i++) {
+			if (ranked[i].rating > 0) {
+				var title = ranked[i].title
+			    , year = ranked[i].year
+			    , poster = ranked[i].poster;
+			  if (!(title.toLowerCase().indexOf('director\'s cut') > -1)) // Fix "Donnie Darko" Issue
+					addResult(title, year, poster);
+			}
 		}
 	}
+}
+function objectSort(array, key) {
+  return array.sort(function(b, a) {
+    var x = a[key]; var y = b[key];
+    return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+  });
 }
 function request(type, path, data, callback){
 	var request = new XMLHttpRequest; 
@@ -221,7 +237,7 @@ function addResult(t, y, p) {
 	h2.appendChild(title);
 	h3.appendChild(year);
 	a.setAttribute('class','choice');
-	a.addEventListener('click',nomination,false);
+	a.addEventListener('click',selectChoice,false);
 	a.appendChild(nom);
 	info.appendChild(h2);
 	info.appendChild(h3);
@@ -231,28 +247,37 @@ function addResult(t, y, p) {
 	li.appendChild(info);
 	document.getElementById('results').appendChild(li);
 }
-function nomination(e) {
+function selectChoice(e) {
 	var wrap = document.getElementById('wrap')
 	  , h1 = document.createElement('h1')
 	  , mov = document.createTextNode(((e.target.previousSibling).previousSibling).innerHTML +
 			' (' + (e.target.previousSibling).innerHTML.slice(-4) + ')')
+	  , h2 = document.createElement('h2')
+	  , tagline = document.createTextNode('Tag this movie for others to discover.')
 	  , tagbox = document.createElement('div')
 	  , ul = document.createElement('ul')
 	  , buttons = document.createElement('div')
-	  , button = document.createElement('a');
+	  , button = document.createElement('a')
+	  , tag = document.createTextNode('Tag Movie');
 	console.log(mov);
 	h1.appendChild(mov);
+	h1.setAttribute('id','info');
+	h2.setAttribute('id','tagline');
+	h2.appendChild(tagline);
 	tagbox.setAttribute('id','tagbox');
 	ul.setAttribute('id','list');
 	tagbox.appendChild(ul);
 	buttons.setAttribute('class','buttons');
 	button.setAttribute('class','button');
-	button.setAttribute('id','submitnom');
+	button.setAttribute('id','submit');
+	button.addEventListener('click',nominateMovie,false);
+	button.appendChild(tag);
 	buttons.appendChild(button);
 	while (wrap.firstChild) {
 		wrap.removeChild(wrap.firstChild);
 	}
 	wrap.appendChild(h1);
+	wrap.appendChild(h2);
 	wrap.appendChild(tagbox);
 	wrap.appendChild(buttons);
 	request('POST','scripts/tags.php',null,callback);
@@ -280,16 +305,7 @@ function balance(array, ul, tagbox) {
     arr.splice(index, 1);
     return(result);
   }
-  num = Math.ceil(array.length / 2);
-	shortest = [].concat((array.sort(function (a, b) { return a.length - b.length; })).slice(0,num));
-	longest = [].concat((array.sort(function (a, b) { return b.length - a.length; })).slice(0,num-1));
-  while (shortest.length || longest.length) {
-    if (shortest.length)
-      result.push(extractRandom(shortest));
-    if (longest.length)
-      result.push(extractRandom(longest));
-  }
-	for (var i = 0; i < array.length; i++) {
+  for (var i = 0; i < array.length; i++) {
 		total += array[i].length;
 	}
 	avg = total / array.length;
@@ -308,6 +324,14 @@ function balance(array, ul, tagbox) {
 		if (avg < 6.2)
 			tagbox.style.width = "89%";
 	}
+  num = Math.floor(array.length / 2);
+	shortest = [].concat((array.sort(function (a, b) { return a.length - b.length; })).splice(0,num));
+  while (shortest.length || array.length) {
+    if (shortest.length)
+      result.push(extractRandom(shortest));
+    if (array.length)
+      result.push(extractRandom(array));
+  }
 	for (var i = 0; i < result.length; i++) {
 		addTag(result[i], ul);
 	}
@@ -321,4 +345,30 @@ function addTag(t, ul) {
 	a.appendChild(tag);
 	li.appendChild(a);
 	ul.appendChild(li);
+}
+function nominateMovie(e) {
+	var  t = 'title='
+	  , info = ((document.getElementById('info')).innerHTML)
+	  , title = encodeURIComponent(info.substring(0, info.indexOf(' (')))
+	  , y = '&year='
+	  , year = info.substring(info.length-5,info.length-1)
+	  , tags = '&tags='
+	  , array = []
+	  , active = document.querySelectorAll('.active');
+	[].forEach.call(active, function (tag) {
+		array.push(tag.innerHTML);
+	});
+	request('POST','scripts/nomination.php',t+title+y+year+tags+array.join(','),callback);
+	function callback(request) {
+		if (request.readyState === 4) {
+			var response = request.responseText;
+			if (response === 'Error') {
+				// Show warning dialog
+				console.log('Hmm. Something fishy is going on.');
+			} else {
+				// Show thank you page
+				console.log(response);
+			}
+		}
+	}
 }

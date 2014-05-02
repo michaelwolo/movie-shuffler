@@ -1,127 +1,83 @@
 <?php
 
 include("../../config.php");
+header('Content-type: application/json');
 $mysqli = new mysqli("localhost",$dbuser,$dbpass,$dbname);
 if($mysqli->connect_errno) {
   echo "Connection Failed: " . $mysqli->connect_errno;
 }
 
-$tagList = $_GET['tag'];
+$tagList = $_POST['tags'];
 
-if (!$tagList) {
-
-	$randomQuery = "SELECT `MovieID` FROM `MOVIES_TAGS` ORDER BY RAND() LIMIT 1";
-
-	$result = $mysqli->query($randomQuery);
-
-	$randomChoice = array();
-	$index = 0;
-
-	while ($row = $result->fetch_assoc()) {
-	    $randomChoice[$index] = $row['MovieID'];
-    	$index++;
-	};
-
-	$result->free();
-
-	$movieChoice = $randomChoice[0];
-
+$tags = explode(',', $tagList); //take a string with items separated by a comma and make an array of the items
+$safe = array();
+for ($i = 0; $i < count($tags); $i++) {
+	$stmt = $mysqli->prepare("SELECT `ID` FROM `tags` WHERE `Tag` = ?");
+  $stmt->bind_param("s", $tags[$i]);
+  $stmt->execute();
+  $stmt->store_result();
+  if ($stmt->num_rows > 0) {
+    $stmt->bind_result($tagID);
+    $stmt->fetch();
+    $safe[] = $tagID;
+  }
+  $stmt->close();
+}
+$count = count($safe);
+$tagsList = implode('\',\'', $safe); //take an array of items and make a string, separating the items with a comma
+$midArray = array();
+while ($count) {
+	$query = "SELECT `MovieID` FROM `movies_tags` WHERE `TagID` IN ('$tagsList') GROUP BY `MovieID` HAVING count(distinct `TagID`) = $count";
+	$stmt = $mysqli->prepare($query);
+  $stmt->execute();
+  $stmt->store_result();
+  if ($stmt->num_rows > 0) {
+		$stmt->bind_result($mid);
+    while ($row = $stmt->fetch()) {
+    	$midArray[] = $mid;
+    }
+    break;
+  }
+  $count--;
+  $stmt->close();
+}
+if ($midArray) {
+	shuffle($midArray);
+	$choice = $midArray[0];
 } else {
+	$stmt = $mysqli->prepare("SELECT `MovieID` FROM `movies_tags` ORDER BY RAND() LIMIT 1");
+  $stmt->execute();
+  $stmt->bind_result($choice);
+  $stmt->fetch();
+  $stmt->close();
+}
+$stmt = $mysqli->prepare("SELECT `Title`,`Year`,`Trailer`,`RTID` FROM `movies` WHERE `ID` = ?");
+$stmt->bind_param("i", $choice);
+$stmt->execute();
+$stmt->bind_result($ti, $y, $tr, $rt);
+while($stmt->fetch()) {
+	$title = $ti;
+	$year = $y;
+	$trailer = $tr;
+	// <iframe width="560" height="315" src="//www.youtube.com/embed/bLBSoC_2IY8" frameborder="0" allowfullscreen></iframe>
+	$RTID = $rt;
+}
+$stmt->close();
+$json = '{"title":"' . $title . '","year":' . $year . ',"rating":' . rotten($RTID) . ',"trailer":"' . $trailer . '"}';
+echo $json;
 
-	$tags = explode(',', $tagList); //take a string with items separated by a comma and make an array of the items
-
-	$tagListLength = count($tags); //determine the number of items in an array (for use in the for loop below?)
-
-	for ($i = 0; $i < $tagListLength; $i++) {
-		$tagsSafe[$i] = $mysqli->real_escape_string($tags[$i]); //escape each item's special characters before entering the values into sql queries
-	};
-	
-	$tagsList = implode('\',\'', $tagsSafe); //take an array of items and make a string, separating the items with a comma
-
-	$tagIDQuery = "SELECT `ID` FROM `TAGS` WHERE `Tag` IN ('$tagsList');";
-
-	if ($result = $mysqli->query($tagIDQuery)) {
-
-		$tagIDList = array();
-		$index = 0;
-
-		while ($row = $result->fetch_assoc()) { //place the result in a list ($tagIDList) for the next sql command
-		    $tagIDList[$index] = $row['ID'];
-	    	$index++;
-		};
-
-		$result->free();
-
-		$IDListLength = count($tagIDList);
-
-		$tagIDsString = implode('\',\'', $tagIDList);
-
-		$noResults = true;
-
-		while ($noResults) {
-
-			$matchingMovies = "SELECT `MovieID` FROM `MOVIES_TAGS` WHERE `TagID` IN ('$tagIDsString') GROUP BY `MovieID` HAVING count(distinct `TagID`) = $IDListLength;";
-
-			if ($stmt = $mysqli->prepare($matchingMovies)) {
-
-		  $stmt->execute();
-
-		  $stmt->store_result();
-
-		  $returnedResults = $stmt->num_rows;
-
-		  if ($returnedResults > 0) {
-		  	
-		    $stmt->bind_result($movieID);
-
-		    $movieIDArray = array();
-				$index = 0;
-
-		    while ($row = $stmt->fetch()) {
-		    	$movieIDArray[$index] = $movieID;
-		    	$index++;
-		    };
-
-		    $noResults = false;
-
-		  } else {
-
-		  	$IDListLength--;
-
-		  };
-
-		  $stmt->close();
-
-			};
-
-		};
-
-			shuffle($movieIDArray);
-
-			$movieChoice = $movieIDArray[0];
-
-	};
-
-};
-
-//find the matching movie row from the Movies tables and save the results
-
-$selectionQuery = "SELECT * FROM `MOVIES` WHERE `ID` = '$movieChoice';";
-
-$result = $mysqli->query($selectionQuery);
-
-while($row = $result->fetch_assoc()) {
-
-	$title = $row['Title'];
-	$year = $row['Year'];
-	$critic = $row['CriticRating'];
-	$audience = $row['AudienceRating'];
-	$trailer = $row['Trailer'];
-	$link = $row['RTLink'];
-
-};
-
-$result->free();
+function rotten($id) {
+	global $rtkey;
+	$endpoint = 'http://api.rottentomatoes.com/api/public/v1.0/movies/'.$id.'.json?apikey='.$rtkey;
+	$session = curl_init($endpoint);
+	curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
+	$data = curl_exec($session);
+	curl_close($session);
+	$movie = json_decode($data);
+	if ($movie === NULL) die('Error parsing JSON');
+	$rating = $movie->ratings->audience_score;
+	return $rating;
+}
 
 $mysqli->close();
 

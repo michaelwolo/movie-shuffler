@@ -91,7 +91,6 @@ nav {
 }
 #tagbox {
 	display: inline-block;
-	width: 100%;
 	min-height: 166px;
 	margin: 0 auto;
 	padding: 5px 15px;
@@ -103,6 +102,7 @@ nav {
 	box-shadow: 0 0 0 1px #440000, inset 0 2px 0 0 #440000;
 	text-align: center;
 	cursor: default;
+	overflow: hidden;
 	-webkit-user-select: none;
 	-moz-user-select: none;
 	-ms-user-select: none;
@@ -841,7 +841,10 @@ input {
 	}
 }
 @-moz-document url-prefix() {
-    .tag, .active {
-      padding: 8px 10px 9px;
-    }
+  #tagbox {
+  	min-height: 170px;
+  }
+  .tag, .active {
+    padding: 8px 10px 9px;
+  }
 }

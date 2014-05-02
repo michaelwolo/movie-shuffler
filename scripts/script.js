@@ -1,45 +1,42 @@
-window.onload = function () {
-	// var tags = document.querySelectorAll('.tag');
-	// [].forEach.call(tags, function (tag) {
-	// 	tag.addEventListener('click',activate,false);
-	// });
-	request('POST','scripts/tags.php',null,callback);
-	function callback(request) {
-		if (request.readyState === 4) {
-			var tags = JSON.parse(request.responseText)
-			  , tagbox = document.getElementById('tagbox')
-			  , ul = document.getElementById('list')
-			  , total = 17
-			  , array = [];
-			for (var i = 0; i < total; i++) {
-				var tag = tags[i];
-				array.push(tag);
-			}
-			balance(array, ul, tagbox);
+window.addEventListener('load',home,false);
+function $(el) {
+	return document.getElementById(el);
+}
+function elem(type, id, classes) {
+	var el = document.createElement(type);
+	if (id) {
+		el.setAttribute('id',id);
+	}
+	if (classes) {
+		for (var i = 0; i < classes.length; i++) {
+			el.classList.add(classes[i]);
 		}
 	}
-	var nom = document.getElementById('nominate');
-	nom.addEventListener('click',suggest,false);
-	// var submit = document.getElementById('submit');
-	// submit.addEventListener('click',animate,true);
-};
-function prefixEvent(element, type, callback, remove) {
+	return el;
+}
+function append(el, array) {
+	for (var i = 0; i < array.length; i++) {
+		el.appendChild(array[i]);
+	}
+	return el;
+}
+function prefixEvent(el, type, callback, remove) {
 	var pfx = ["webkit", "moz", "MS", "o", ""];
 	for (var i = 0; i < pfx.length; i++) {
 		if (!pfx[i])
 			type = type.toLowerCase();
 		if (remove)
-			element.removeEventListener(pfx[i]+type, callback, false);
+			el.removeEventListener(pfx[i]+type, callback, false);
 		else
-			element.addEventListener(pfx[i]+type, callback, false);
-		// prefixEvent(elem, "AnimationStart", AnimationListener);
-		// prefixEvent(elem, "AnimationIteration", AnimationListener);
-		// prefixEvent(elem, "AnimationEnd", AnimationListener);
+			el.addEventListener(pfx[i]+type, callback, false);
+		// prefixEvent(el, "AnimationStart", AnimationListener);
+		// prefixEvent(el, "AnimationIteration", AnimationListener);
+		// prefixEvent(el, "AnimationEnd", AnimationListener);
 	}
 }
 function activate(e) {
-	var submit = document.getElementById('submit')
-	  , tagline = document.getElementById('tagline')
+	var submit = $('submit')
+	  , tagline = $('tagline')
 	  , active = document.querySelectorAll('.active');
 	e.target.classList.remove('tag');
 	e.target.classList.add('active');
@@ -55,7 +52,7 @@ function activate(e) {
 	}
 }
 function deactivate(e) {
-	var tagline = document.getElementById('tagline')
+	var tagline = $('tagline')
 	  , active = document.querySelectorAll('.active');
 	e.target.classList.remove('active');
 	e.target.classList.add('tag');
@@ -68,111 +65,89 @@ function deactivate(e) {
 			changeText(tagline, 'Tag this movie for others to discover.');
 	}
 }
-function changeText(elem, text) {
-	elem.setAttribute('class','fadeout-line');
-	prefixEvent(elem,'AnimationEnd',fadein);
+function changeText(el, text) {
+	el.setAttribute('class','fadeout-line');
+	prefixEvent(el,'AnimationEnd',fadein);
 	function fadein(e) {
-		elem.innerHTML = text;
-		elem.setAttribute('class','fadein-line');
-		prefixEvent(elem,'AnimationEnd',remove);
+		el.innerHTML = text;
+		el.setAttribute('class','fadein-line');
+		prefixEvent(el,'AnimationEnd',remove);
 	}
 }
 function suggest(e) {
-	var centre = document.getElementById('centre')
-	  , wrap = document.createElement('div')
-	  , h1 = document.createElement('h1')
+	var centre = $('centre')
+	  , wrap = elem('div','wrap',['fadein-wrap'])
+	  , h1 = elem('h1')
 	  , title = document.createTextNode('Suggest Your Favorites!')
-	  , input = document.createElement('input')
-	  , a = document.createElement('a')
-	  , ul = document.createElement('ul')
-	  , nom = document.getElementById('nominate');
-	wrap.setAttribute('id','wrap');
-	wrap.setAttribute('class','fadein-wrap');
+	  , input = elem('input','term')
+	  , a = elem('a','search')
+	  , ul = elem('ul','results')
+	  , nom = $('nominate');
 	prefixEvent(wrap,'AnimationEnd',remove);
-	h1.appendChild(title);
 	input.setAttribute('type','text');
-	input.setAttribute('id','term');
 	input.setAttribute('placeholder','Search for movies');
 	input.addEventListener('keypress',searchEnter,false);
-	a.setAttribute('id','search');
 	a.addEventListener('click',searchTerm,false);
-	ul.setAttribute('id','results');
-	wrap.appendChild(h1);
-	wrap.appendChild(input);
-	wrap.appendChild(a);
-	wrap.appendChild(ul);
+	append(wrap,[append(h1,[title]),input,a,ul]);
 	centre.classList.add('fadeout-centre');
-	function fadein(e) {
-		e.target.parentNode.removeChild(e.target);
-		nom.innerHTML = 'Return to Shuffler';
-		nom.removeEventListener('click',suggest,false);
-		nom.addEventListener('click',home,false);
-		document.body.appendChild(wrap);
-		if (!/Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)) {
-			input.focus();
-		}
-	}
-	prefixEvent(centre,'AnimationEnd',fadein);
+	prefixEvent(centre,'AnimationEnd', function () {
+		changeUp(centre, wrap, nom, suggest, home, 'Return to Shuffler', input);
+	});
 }
 function home(e) {
 	request('POST','scripts/tags.php',null,callback);
-	console.log('AJAX call was sent, show loading image.')
 	function callback(request) {
 		if (request.readyState === 4) {
 			var tags = JSON.parse(request.responseText)
 			  , total = 17
-			  , wrap = document.getElementById('wrap')
-	  		, centre = document.createElement('div')
-	  		, header = document.createElement('div')
-	  		, logo = document.createElement('div')
-	  		, h1 = document.createElement('h1')
+			  , start = $('start')
+			  , wrap = $('wrap')
+	  		, centre = elem('div','centre',['fadein-centre'])
+	  		, header = elem('div',null,['header'])
+	  		, logo = elem('div',null,['logo'])
+	  		, h1 = elem('h1','tagline')
 	  		, tagline = document.createTextNode('Find movies that match your interests.')
-	  		, tagbox = document.createElement('div')
-	  		, ul = document.createElement('ul')
-	  		, buttons = document.createElement('div')
-	  		, submit = document.createElement('a')
+	  		, tagbox = elem('div','tagbox')
+	  		, ul = elem('ul','list')
+	  		, buttons = elem('div',null,['buttons'])
+	  		, submit = elem('a','submit',['button'])
 	  		, get = document.createTextNode('Get Movie')
-	  		, nom = document.getElementById('nominate')
+	  		, nom = $('nominate')
 	  		, array = [];
-	  	centre.setAttribute('id','centre');
-			centre.setAttribute('class','fadein-centre');
 			prefixEvent(centre,'AnimationEnd',remove);
-			header.setAttribute('class','header');
-			logo.setAttribute('class','logo');
-			tagbox.setAttribute('id','tagbox');
-			ul.setAttribute('id','list');
+			submit.addEventListener('click',getMovie,false);
 			for (var i = 0; i < total; i++) {
-				var tag = tags[i];
-				array.push(tag);
+				array.push(tags[i]);
 			}
 			balance(array, ul, tagbox);
-			tagbox.appendChild(ul);
-			buttons.setAttribute('class','buttons');
-			submit.setAttribute('id','submit');
-			submit.setAttribute('class','button');
-			submit.appendChild(get);
-			buttons.appendChild(submit);
-			h1.setAttribute('id','tagline');
-			h1.appendChild(tagline);
-			header.appendChild(logo);
-			centre.appendChild(header);
-			centre.appendChild(h1);
-			centre.appendChild(tagbox);
-			centre.appendChild(buttons);
-			wrap.className = "fadeout-wrap";
-			function fadein(e) {
-				e.target.parentNode.removeChild(e.target);
-				nom.innerHTML = 'Suggest Movies';
-				nom.removeEventListener('click',home,false);
-				nom.addEventListener('click',suggest,false);
-				document.body.appendChild(centre);
+			append(centre,[append(header,[logo]), append(h1,[tagline]), append(tagbox,[ul]), append(buttons,[append(submit,[get])])]);
+			if (wrap) {
+				wrap.className = "fadeout-wrap";
+				prefixEvent(wrap,'AnimationEnd', function () {
+					changeUp(wrap, centre, nom, home, suggest, 'Suggest Movies');
+				});
+			} else {
+				changeUp(start, centre, nom, home, suggest, 'Suggest Movies');
 			}
-			prefixEvent(wrap,'AnimationEnd',fadein);
 		}
 	}
 }
+function changeUp(rid, add, nom, f1, f2, text, input) {
+	rid.parentNode.removeChild(rid);
+	nom.innerHTML = text;
+	nom.removeEventListener('click',f1,false);
+	nom.addEventListener('click',f2,false);
+	append(document.body,[add]);
+	if (add.id === 'wrap' && !/Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)) {
+		input.focus();
+	}
+}
 function remove(e) {
-	e.target.removeAttribute('class');
+	if (e.target.tagName.toLowerCase() === 'a') {
+		e.target.classList.remove("popping");
+	} else {
+		e.target.removeAttribute('class');
+	}
 	prefixEvent(e.target,'AnimationEnd',remove,true);
 }
 function searchEnter(e) {
@@ -181,12 +156,12 @@ function searchEnter(e) {
 	}
 }
 function searchTerm(e) {
-	var searchTerm = document.getElementById('term').value
-	  , results = document.getElementById('results')
+	var searchTerm = $('term').value
+	  , results = $('results')
 	  , info = 'search=' + searchTerm;
 	if (searchTerm) {
 		request('POST','scripts/search.php',info,movies);
-		document.getElementById('term').value = '';
+		$('term').value = '';
 	}
 }
 function movies(request) {
@@ -221,73 +196,43 @@ function request(type, path, data, callback){
 	request.send(data);
 }
 function addResult(t, y, p) {
-	var li = document.createElement('li')
-		, post = document.createElement('div')
-		, info = document.createElement('div')
-		, img = document.createElement('img')
-	  , h2 = document.createElement('h2')
-	  , h3 = document.createElement('h3')
-	  , a = document.createElement('a')
+	var li = elem('li')
+		, post = elem('div',null,['poster'])
+		, info = elem('div',null,['info'])
+		, img = elem('img')
+	  , h2 = elem('h2')
+	  , h3 = elem('h3')
+	  , a = elem('a',null,['choice'])
 	  , nom = document.createTextNode('Nominate')
 	  , title = document.createTextNode(t)
 	  , year = document.createTextNode('Release Year: ' + y);
-	post.appendChild(img);
-	post.setAttribute('class','poster');
 	img.setAttribute('src',p);
-	h2.appendChild(title);
-	h3.appendChild(year);
-	a.setAttribute('class','choice');
 	a.addEventListener('click',selectChoice,false);
-	a.appendChild(nom);
-	info.appendChild(h2);
-	info.appendChild(h3);
-	info.appendChild(a);
-	info.setAttribute('class','info');
-	li.appendChild(post);
-	li.appendChild(info);
-	document.getElementById('results').appendChild(li);
+	append($('results'),[append(li,[append(post,[img]),append(info,[append(h2,[title]),append(h3,[year]),append(a,[nom])])])]);
 }
 function selectChoice(e) {
-	var wrap = document.getElementById('wrap')
-	  , h1 = document.createElement('h1')
+	var wrap = $('wrap')
+	  , h1 = elem('h1','info')
 	  , mov = document.createTextNode(((e.target.previousSibling).previousSibling).innerHTML +
 			' (' + (e.target.previousSibling).innerHTML.slice(-4) + ')')
-	  , h2 = document.createElement('h2')
+	  , h2 = elem('h2','tagline')
 	  , tagline = document.createTextNode('Tag this movie for others to discover.')
-	  , tagbox = document.createElement('div')
-	  , ul = document.createElement('ul')
-	  , buttons = document.createElement('div')
-	  , button = document.createElement('a')
+	  , tagbox = elem('div','tagbox')
+	  , ul = elem('ul','list')
+	  , buttons = elem('div',null,['buttons'])
+	  , button = elem('a','submit',['button'])
 	  , tag = document.createTextNode('Tag Movie');
-	console.log(mov);
-	h1.appendChild(mov);
-	h1.setAttribute('id','info');
-	h2.setAttribute('id','tagline');
-	h2.appendChild(tagline);
-	tagbox.setAttribute('id','tagbox');
-	ul.setAttribute('id','list');
-	tagbox.appendChild(ul);
-	buttons.setAttribute('class','buttons');
-	button.setAttribute('class','button');
-	button.setAttribute('id','submit');
 	button.addEventListener('click',nominateMovie,false);
-	button.appendChild(tag);
-	buttons.appendChild(button);
 	while (wrap.firstChild) {
 		wrap.removeChild(wrap.firstChild);
 	}
-	wrap.appendChild(h1);
-	wrap.appendChild(h2);
-	wrap.appendChild(tagbox);
-	wrap.appendChild(buttons);
+	append(wrap,[append(h1,[mov]),append(h2,[tagline]),append(tagbox,[ul]),append(buttons,[append(button,[tag])])]);
 	request('POST','scripts/tags.php',null,callback);
-	console.log('AJAX call was sent, show loading image.')
 	function callback(request) {
 		if (request.readyState === 4) {
 			var tags = JSON.parse(request.responseText);
 			for (var i = 0; i < tags.length; i++) {
-				var tag = tags[i];
-				addTag(tag, ul);
+				addTag(tags[i], ul);
 			}
 		}
 	}
@@ -338,17 +283,15 @@ function balance(array, ul, tagbox) {
 }
 function addTag(t, ul) {
 	var tag = document.createTextNode(t)
-	  , li = document.createElement('li')
-	  , a = document.createElement('a');
-	a.setAttribute('class','tag');
+	  , li = elem('li')
+	  , a = elem('a',null,['tag']);
 	a.addEventListener('click',activate,false);
-	a.appendChild(tag);
-	li.appendChild(a);
-	ul.appendChild(li);
+	prefixEvent(a,'AnimationEnd',remove);
+	append(ul,[append(li,[append(a,[tag])])]);
 }
 function nominateMovie(e) {
 	var  t = 'title='
-	  , info = ((document.getElementById('info')).innerHTML)
+	  , info = (($('info')).innerHTML)
 	  , title = encodeURIComponent(info.substring(0, info.indexOf(' (')))
 	  , y = '&year='
 	  , year = info.substring(info.length-5,info.length-1)
@@ -369,6 +312,20 @@ function nominateMovie(e) {
 				// Show thank you page
 				console.log(response);
 			}
+		}
+	}
+}
+function getMovie(e) {
+	var active = document.querySelectorAll('.active')
+	  , array = [];
+	[].forEach.call(active, function (tag) {
+		array.push(tag.innerHTML);
+	});
+	request('POST','scripts/suggestion.php','tags='+array.join(','),callback);
+	function callback(request) {
+		if (request.readyState === 4) {
+			var response = JSON.parse(request.responseText);
+			console.log(response);
 		}
 	}
 }

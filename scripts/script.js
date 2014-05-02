@@ -256,18 +256,16 @@ function balance(array, ul, tagbox) {
 	avg = total / array.length;
 	console.log(avg);
 	if (window.innerWidth > 688) {
-		if (avg < 8.0)
-			tagbox.style.width = "99%";
 		if (avg < 7.5)
-			tagbox.style.width = "97%";
+			tagbox.style.width = "98%";
 		if (avg < 7.2)
-			tagbox.style.width = "95%";
+			tagbox.style.width = "96%";
 		if (avg < 6.8)
-			tagbox.style.width = "93%";
+			tagbox.style.width = "94%";
 		if (avg < 6.5)
-			tagbox.style.width = "91%";
+			tagbox.style.width = "92%";
 		if (avg < 6.2)
-			tagbox.style.width = "89%";
+			tagbox.style.width = "90%";
 	}
   num = Math.floor(array.length / 2);
 	shortest = [].concat((array.sort(function (a, b) { return a.length - b.length; })).splice(0,num));
@@ -280,14 +278,57 @@ function balance(array, ul, tagbox) {
 	for (var i = 0; i < result.length; i++) {
 		addTag(result[i], ul);
 	}
+	addShuffler(ul).addEventListener('click',shuffle,false);
 }
 function addTag(t, ul) {
 	var tag = document.createTextNode(t)
 	  , li = elem('li')
 	  , a = elem('a',null,['tag']);
 	a.addEventListener('click',activate,false);
-	prefixEvent(a,'AnimationEnd',remove);
 	append(ul,[append(li,[append(a,[tag])])]);
+}
+function addShuffler(ul) {
+	var shuffle = elem('a',null,['shuffle'])
+	  , li = elem('li');
+	append(li,[append(ul,[shuffle])]);
+	return shuffle;
+}
+function shuffle(e) {
+	var tags = document.querySelectorAll('.tag')
+	  , active = document.querySelectorAll('.active')
+	  , ul = $('list')
+	  , tagbox = $('tagbox')
+	  , keep = []
+	  , leave = []
+	  , index = 0
+	  , newList = [];
+	[].forEach.call(tags, function (tag) {
+		leave.push(tag.innerText || tag.textContent);
+	});
+	[].forEach.call(active, function (tag) {
+		keep.push(tag.innerText || tag.textContent);
+	});
+	request('POST','scripts/tags.php',null,callback);
+	function callback(request) {
+		if (request.readyState === 4) {
+			var tags = JSON.parse(request.responseText);
+			for (var i = 0; i < leave.length; i++) {
+				tags.splice(tags.indexOf(leave[i]),1);
+			}
+			for (var i = 0; i < keep.length; i++) {
+				tags.splice(tags.indexOf(keep[i]),1);
+			}
+			while (keep.length < 17) {
+				keep.push(tags[index]);
+				index++
+			}
+			while (ul.firstChild) {
+				ul.removeChild(ul.firstChild);
+			}
+			balance(keep, ul, tagbox);
+			append(tagbox,[ul]);
+		}
+	}
 }
 function nominateMovie(e) {
 	var  t = 'title='

@@ -68,7 +68,7 @@ nav {
 	user-select: none;
 }
 .shuffle {
-	margin: 0 -51px 12px 10px;
+	margin: 7px;
 	background: url(../img/shuffler.svg) no-repeat;
 	background-position: 6px -116px;
 	background-color: #901010;

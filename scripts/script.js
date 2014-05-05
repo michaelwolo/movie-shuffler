@@ -350,7 +350,7 @@ function nominateMovie(e) {
 		if (request.readyState === 4) {
 			var response = request.responseText;
 			if (response === 'Error') {
-				// Show warning dialog
+				// Show error message to user
 				console.log('Hmm. Something fishy is going on.');
 			} else {
 				// Show thank you page

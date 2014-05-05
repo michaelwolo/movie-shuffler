@@ -4,9 +4,8 @@ function $(el) {
 }
 function elem(type, id, classes) {
 	var el = document.createElement(type);
-	if (id) {
+	if (id)
 		el.setAttribute('id',id);
-	}
 	if (classes) {
 		for (var i = 0; i < classes.length; i++) {
 			el.classList.add(classes[i]);
@@ -138,9 +137,8 @@ function changeUp(rid, add, nom, f1, f2, text, input) {
 	nom.removeEventListener('click',f1,false);
 	nom.addEventListener('click',f2,false);
 	append(document.body,[add]);
-	if (add.id === 'wrap' && !/Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)) {
+	if (add.id === 'wrap' && !/Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent))
 		input.focus();
-	}
 }
 function remove(e) {
 	if (e.target.tagName.toLowerCase() === 'a') {
@@ -237,36 +235,29 @@ function selectChoice(e) {
 		}
 	}
 }
-function balance(array, ul, tagbox) {
+function balance(array, ul, tagbox, kept) {
 	var result = []
 	  , shortest = []
 	  , longest = []
 	  , num = 0
 	  , total = 0
 	  , avg = 0;
-	function extractRandom(arr) {
-    var index = Math.floor(Math.random() * arr.length)
-      , result = arr[index];
-    arr.splice(index, 1);
-    return(result);
-  }
   for (var i = 0; i < array.length; i++) {
 		total += array[i].length;
 	}
-	avg = total / array.length;
-	console.log(avg);
-	if (window.innerWidth > 688) {
-		if (avg < 7.5)
-			tagbox.style.width = "98%";
-		if (avg < 7.2)
-			tagbox.style.width = "96%";
-		if (avg < 6.8)
-			tagbox.style.width = "94%";
-		if (avg < 6.5)
-			tagbox.style.width = "92%";
-		if (avg < 6.2)
-			tagbox.style.width = "90%";
+	if (kept) {
+		for (var i = 0; i < kept.length; i++) {
+			total += kept[i].length;
+		}
+		avg = total / (array.length + kept.length);
+	} else {
+		avg = total / array.length;
 	}
+	console.log(avg);
+	if (tagbox.hasAttribute('style'))
+		tagbox.removeAttribute('style');
+	if (window.innerWidth > 688 && avg < 7.5)
+		tagbox.style.width = Math.round(100-10*(7.5-avg))+'%';
   num = Math.floor(array.length / 2);
 	shortest = [].concat((array.sort(function (a, b) { return a.length - b.length; })).splice(0,num));
   while (shortest.length || array.length) {
@@ -280,11 +271,22 @@ function balance(array, ul, tagbox) {
 	}
 	addShuffler(ul).addEventListener('click',shuffle,false);
 }
-function addTag(t, ul) {
+function extractRandom(arr) {
+  var index = Math.floor(Math.random() * arr.length)
+    , result = arr[index];
+  arr.splice(index, 1);
+  return(result);
+}
+function addTag(t, ul, active) {
 	var tag = document.createTextNode(t)
-	  , li = elem('li')
-	  , a = elem('a',null,['tag']);
-	a.addEventListener('click',activate,false);
+	  , li = elem('li');
+	if (active) {
+		var a = elem('a',null,['active']);
+		a.addEventListener('click',deactivate,false);
+	} else {
+		var a = elem('a',null,['tag']);
+		a.addEventListener('click',activate,false);
+	}
 	append(ul,[append(li,[append(a,[tag])])]);
 }
 function addShuffler(ul) {
@@ -300,8 +302,7 @@ function shuffle(e) {
 	  , tagbox = $('tagbox')
 	  , keep = []
 	  , leave = []
-	  , index = 0
-	  , newList = [];
+	  , newTags = [];
 	[].forEach.call(tags, function (tag) {
 		leave.push(tag.innerText || tag.textContent);
 	});
@@ -318,14 +319,16 @@ function shuffle(e) {
 			for (var i = 0; i < keep.length; i++) {
 				tags.splice(tags.indexOf(keep[i]),1);
 			}
-			while (keep.length < 17) {
-				keep.push(tags[index]);
-				index++
-			}
 			while (ul.firstChild) {
 				ul.removeChild(ul.firstChild);
 			}
-			balance(keep, ul, tagbox);
+			for (var i = 0; i < keep.length; i++) {
+				addTag(keep[i], ul, true);
+			}
+			for (var i = 0; i < (17-keep.length); i++) {
+				newTags.push(tags[i]);
+			}
+			balance(newTags, ul, tagbox, keep);
 			append(tagbox,[ul]);
 		}
 	}

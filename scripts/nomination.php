@@ -34,14 +34,12 @@ if ($tagArray) {
     $stmt->execute();
     $id = $mysqli->insert_id;
     addTags($tagArray, $id);
-    echo "Creating a new entry for " . $movie["title"] . " released in " . $movie["year"] . " and rated " . $movie["rating"] . ". Rotten Tomatoes ID is: " . $movie["id"] . ".\n";
-    echo "YouTube video ID is " . youtube($movie["title"]) . ".\n";
-    // Show thank you (demo?) page
+    echo '{"title":"' . $movie["title"] . '","year":' . $movie["year"] . ',"rating":' . $movie["rating"] . ',"trailer":"' . youtube($movie["title"]) . '"}';
   } else {
     echo "Error";
   }
 } else {
-  echo "Help me out by selecting at least one tag from the list. Thanks.";
+  echo "Error";
 }
 
 function checkTitle($title) {
@@ -108,7 +106,6 @@ function addTags($array, $id) {
     if ($count) {
       increaseCount($id, $array[$i]->id, $count);
     } else {
-      echo "Adding " . $array[$i]->name . ", ID: " . $array[$i]->id . ", to the previous entry with an ID of " . $id . ".\n";
       $stmt = $mysqli->prepare("INSERT INTO `movies_tags` (MovieID,TagID) VALUES (?,?)");
       $stmt->bind_param("ii", $id, $array[$i]->id);
       $stmt->execute();
@@ -119,7 +116,6 @@ function addTags($array, $id) {
 
 function increaseCount($mid, $tid, $count) {
   global $mysqli;
-  echo "Changing count for " . $mid . " and " . $tid . ".\n";
   $stmt = $mysqli->prepare("UPDATE `movies_tags` SET `Count`=? WHERE `MovieID`=? AND `TagID`=?");
   $stmt->bind_param("iii", $count, $mid, $tid);
   $stmt->execute();
@@ -129,7 +125,6 @@ function increaseCount($mid, $tid, $count) {
 function checkDuplicates($mid, $tid) {
   global $mysqli;
   $count = 0;
-  echo "Checking duplicates..\n";
   $stmt = $mysqli->prepare("SELECT `Count` FROM `movies_tags` WHERE `MovieID` = ? AND `TagID` = ?");
   $stmt->bind_param("ii", $mid, $tid);
   $stmt->execute();
@@ -138,7 +133,6 @@ function checkDuplicates($mid, $tid) {
   $stmt->close();
   if ($count > 0) {
     $count++;
-    echo "Results stored as " . $count . ".\n";
     return $count;
   } else {
     return false;

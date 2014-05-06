@@ -348,7 +348,8 @@ function nominateMovie(e) {
 	  , year = info.substring(info.length-5,info.length-1)
 	  , tags = '&tags='
 	  , array = []
-	  , active = document.querySelectorAll('.active');
+	  , active = document.querySelectorAll('.active')
+	  , wrap = $('wrap');
 	[].forEach.call(active, function (tag) {
 		array.push(tag.innerHTML);
 	});
@@ -357,11 +358,31 @@ function nominateMovie(e) {
 		if (request.readyState === 4) {
 			var response = request.responseText;
 			if (response === 'Error') {
-				// Show error message to user
 				console.log('Hmm. Something fishy is going on.');
 			} else {
-				// Show thank you pageg
-				console.log(response);
+				var json = JSON.parse(response)
+			    , wrap = $('wrap')
+			    , centre = elem('div','centre',['fadein-centre'])
+			    , h1 = elem('h1',null,['title'])
+			    , title = document.createTextNode(json.title+' ('+json.year+')')
+			    , video = elem('div',null,['video'])
+			    , contain = elem('div',null,['video-container'])
+			    , iframe = elem('iframe')
+			    , p = elem('p')
+			    , buttons = elem('div',null,['buttons'])
+			    , again = elem('a','back',['button'])
+			    , againText = document.createTextNode('Make Another Suggestion')
+			    , thanks = document.createTextNode('Thanks! Time to relax with a good trailer.');
+			  iframe.setAttribute('src','http://www.youtube.com/embed/'+json.trailer+'?rel=0&showinfo=0');
+				iframe.setAttribute('frameborder',0);
+				iframe.setAttribute('allowfullscreen','');
+				again.addEventListener('click',suggest,false);
+				prefixEvent(centre,'AnimationEnd',remove);
+				wrap.classList.add('fadeout-wrap');
+				prefixEvent(wrap,'AnimationEnd', function () {
+					wrap.parentNode.removeChild(wrap);
+					append(document.body,[append(centre,[append(h1,[title]),append(video,[append(contain,[iframe])]),append(p,[thanks]),append(buttons,[append(again,[againText])])])]);
+				});
 			}
 		}
 	}
@@ -375,35 +396,35 @@ function getMovie(e) {
 	request('POST','scripts/suggestion.php','tags='+array.join(','),movieback);
 }
 function movieback(req) {
-		if (req.readyState === 4) {
-			var json = JSON.parse(req.responseText)
-			  , centre = $('centre')
-			  , suggest = elem('div','centre',['fadein-centre'])
-			  , h1 = elem('h1',null,['title'])
-			  , title = document.createTextNode(json.title+' ('+json.year+')')
-			  , video = elem('div',null,['video'])
-			  , contain = elem('div',null,['video-container'])
-			  , iframe = elem('iframe')
-			  , p = elem('p')
-			  , rating = document.createTextNode(json.rating+'% liked this movie on Rotten Tomatoes.')
-			  , buttons = elem('div',null,['buttons'])
-			  , back = elem('a','back',['button'])
-			  , backText = document.createTextNode('Return to Shuffler')
-			  , again = elem('a','again',['button'])
-			  , againText = document.createTextNode('Show Another')
-			  , tags = json.tags;
-			iframe.setAttribute('src','http://www.youtube.com/embed/'+json.trailer+'?rel=0&showinfo=0');
-			iframe.setAttribute('frameborder',0);
-			iframe.setAttribute('allowfullscreen','');
-			back.addEventListener('click',home,false);
-			again.addEventListener('click', function () {
-				request('POST','scripts/suggestion.php','tags='+tags,movieback);
-			}, false);
-			prefixEvent(suggest,'AnimationEnd',remove);
-			centre.classList.add('fadeout-centre');
-			prefixEvent(centre,'AnimationEnd', function () {
-				centre.parentNode.removeChild(centre);
-				append(document.body,[append(suggest,[append(h1,[title]),append(video,[append(contain,[iframe])]),append(p,[rating]),append(buttons,[append(again,[againText]),append(back,[backText])])])]);
-			});
-		}
+	if (req.readyState === 4) {
+		var json = JSON.parse(req.responseText)
+		  , centre = $('centre')
+		  , suggest = elem('div','centre',['fadein-centre'])
+		  , h1 = elem('h1',null,['title'])
+		  , title = document.createTextNode(json.title+' ('+json.year+')')
+		  , video = elem('div',null,['video'])
+		  , contain = elem('div',null,['video-container'])
+		  , iframe = elem('iframe')
+		  , p = elem('p')
+		  , buttons = elem('div',null,['buttons'])
+		  , back = elem('a','back',['button'])
+		  , backText = document.createTextNode('Return to Shuffler')
+		  , again = elem('a','again',['button'])
+		  , againText = document.createTextNode('Show Another')
+		  , rating = document.createTextNode(json.rating+'% liked this movie on Rotten Tomatoes.')
+			, tags = json.tags;
+		iframe.setAttribute('src','http://www.youtube.com/embed/'+json.trailer+'?rel=0&showinfo=0');
+		iframe.setAttribute('frameborder',0);
+		iframe.setAttribute('allowfullscreen','');
+		back.addEventListener('click',home,false);
+		again.addEventListener('click', function () {
+			request('POST','scripts/suggestion.php','tags='+tags,movieback);
+		}, false);
+		prefixEvent(suggest,'AnimationEnd',remove);
+		centre.classList.add('fadeout-centre');
+		prefixEvent(centre,'AnimationEnd', function () {
+			centre.parentNode.removeChild(centre);
+			append(document.body,[append(suggest,[append(h1,[title]),append(video,[append(contain,[iframe])]),append(p,[rating]),append(buttons,[append(again,[againText]),append(back,[backText])])])]);
+		});
 	}
+}

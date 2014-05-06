@@ -765,6 +765,9 @@ input {
 	}
 }
 @media all and (max-width: 580px) {
+	#centre {
+		margin: 10px auto 0;
+	}
 	h1 {
 		font-size: 26px;
 	}

@@ -134,23 +134,23 @@ li {
 	box-shadow: none;
 }
 .tag:hover {
-	background: #A01515;
+	background: #9D1414;
 	cursor: pointer;
 	top: 1px;
 	box-shadow: inset 0 1px 0 0 #9A2020, 0 2px 0 0 #440000;
 }
 .tag:active, .active:active {
-	background: #BF2929;
+	background: #BF3030;
 	top: 2px;
 	box-shadow: inset 0 1px 0 0 #9A2020, 0 1px 0 0 #440000;
 }
 .active {
-	background: #B22;
+	background: #BB2D2D;
 	top: 1px;
 	box-shadow: inset 0 1px 0 0 #B33, 0 2px 0 0 #440000;
 }
 .active:hover {
-	background: #C13030;
+	background: #C53636;
 	cursor: pointer;
 }
 .active:active {
@@ -165,7 +165,8 @@ li {
 	padding: 8px 20px;
 	background: #901010;
 	box-shadow: inset 0 1px 0 0 #B02727, 0 3px 0 0 #440000;
-	font-size: 18px;
+	cursor: pointer;
+	font-size: 16px;
 	position: relative;
 	vertical-align: top;
 	-webkit-user-select: none;
@@ -174,9 +175,12 @@ li {
 	-o-user-select: none;
 	user-select: none;
 }
+.buttons .button {
+	margin: 5px 10px;
+	padding-bottom: 11px;
+}
 .button:hover, .choice:hover {
 	background: #A01515;
-	cursor: pointer;
 	top: 1px;
 	box-shadow: inset 0 1px 0 0 #B02727, 0 2px 0 0 #440000;
 }
@@ -185,21 +189,14 @@ li {
 	top: 2px;
 	box-shadow: inset 0 1px 0 0 #B02727, 0 1px 0 0 #440000;
 }
-.buttons .button {
+#submit {
 	padding: 10px 35px 13px;
-	cursor: pointer;
 	font-size: 20px;
-	-webkit-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	-o-user-select: none;
-	user-select: none;
 }
 .about {
 	margin: 5px 10px;
 	padding: 5px;
 	color: #FFF;
-	font-size: 16px;
 	text-decoration: none;
 	vertical-align: middle;
 }
@@ -211,7 +208,6 @@ li {
 	padding-bottom: 11px;
 	background: #800505;
 	box-shadow: inset 0 1px 0 0 #951B1B, 0 3px 0 0 #440000;
-	font-size: 16px;
 	vertical-align: middle;
 }
 #nominate:hover {
@@ -293,8 +289,19 @@ input {
 	text-align: left
 }
 
-/* Responsive Video CSS Snippet */
+/* Suggestion Page Specific Styling */
 
+.title {
+	margin: 0 0 30px;
+	font-size: 42px;
+}
+.video {
+	margin: -11px 60px 0;
+	padding: 6px 6px;
+	background: #8F1111;
+	border-radius: 5px;
+	box-shadow: inset 0 1px 0 0 #A02525, 0 3px 0 0 #440000;
+}
 .video-container {
 	position: relative;
 	padding-bottom: 56.25%; /* 16:9 */
@@ -310,6 +317,11 @@ input {
 	left: 0;
 	width: 100%;
 	height: 100%;
+	background: #000;
+}
+#centre p {
+	color: #FFF;
+	font-size: 20px;
 }
 
 /* CSS Animations */
@@ -327,13 +339,6 @@ input {
 		  -ms-animation: fadeout-tagline 0.15s ease-out forwards;
 			 -o-animation: fadeout-tagline 0.15s ease-out forwards;
 					animation: fadeout-tagline 0.15s ease-out forwards;
-}
-.glowing {
-	-webkit-animation: glowing 0.8s ease-out forwards;
-		 -moz-animation: glowing 0.8s ease-out forwards;
-		  -ms-animation: glowing 0.8s ease-out forwards;
-		   -o-animation: glowing 0.8s ease-out forwards;
-		  		animation: glowing 0.8s ease-out forwards;
 }
 .fadein-centre {
 	-webkit-animation: fadein-centre 0.1s ease forwards;
@@ -441,38 +446,6 @@ input {
 	100% {
 		display: none;
 		opacity: 0;
-	}
-}
-@-webkit-keyframes glowing {
-	0%   {
-		background: #901010;
-	}
-	100% {
-		background: #A51919;
-	}
-}
-@-moz-keyframes glowing {
-	0%   {
-		background: #901010;
-	}
-	100% {
-		background: #A51919;
-	}
-}
-@-o-keyframes glowing {
-	0%   {
-		background: #901010;
-	}
-	100% {
-		background: #A51919;
-	}
-}
-@keyframes glowing {
-	0%   {
-		background: #901010;
-	}
-	100% {
-		background: #A51919;
 	}
 }
 @-webkit-keyframes fadein-centre {
@@ -677,12 +650,12 @@ input {
 		width: 60%;
 	}
 }
-@media all and (max-height: 605px), all and (max-width: 600px) {
+@media all and (max-height: 630px), all and (max-width: 600px) {
 	html {
 		overflow-x: hidden;
 	}
 	#centre {
-		margin: 15px auto 0;
+		margin: 35px auto 0;
 		padding: 0 0 30px;
 		position: static;
 		top: none;
@@ -690,6 +663,9 @@ input {
 		-webkit-transform: none;
 		ms-transform: none;
 		transform: none;
+	}
+	.title {
+		margin: -60px 0 30px;
 	}
 	@-webkit-keyframes fadein-centre {
 		0%   {

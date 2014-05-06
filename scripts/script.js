@@ -41,13 +41,13 @@ function activate(e) {
 	e.target.classList.add('active');
 	e.target.removeEventListener('click',activate,false);
 	e.target.addEventListener('click',deactivate,false);
-	if (!submit.classList.contains('glowing'))
-		submit.classList.add('glowing');
+	// if (!submit.classList.contains('popping'))
+	// 	submit.classList.add('popping');
 	if (!active.length) {
 		if (/\bothers\b/.test(tagline.innerHTML))
 			changeText(tagline, 'Submit your tags when you\'re ready.');
 		else
-			changeText(tagline, 'Submit your tags to get a recommendation.');
+			changeText(tagline, 'Submit your tags by clicking the button below.');
 	}
 }
 function deactivate(e) {
@@ -58,7 +58,7 @@ function deactivate(e) {
 	e.target.removeEventListener('click',deactivate,false);
 	e.target.addEventListener('click',activate,false);
 	if (active.length === 1) {
-		if (/\brecommendation\b/.test(tagline.innerHTML))
+		if (/\bbelow\b/.test(tagline.innerHTML))
 			changeText(tagline, 'Find movies that match your interests.');
 		else
 			changeText(tagline, 'Tag this movie for others to discover.');
@@ -101,6 +101,7 @@ function home(e) {
 			  , total = 17
 			  , start = $('start')
 			  , wrap = $('wrap')
+			  , cent1 = $('centre')
 	  		, centre = elem('div','centre',['fadein-centre'])
 	  		, header = elem('div',null,['header'])
 	  		, logo = elem('div',null,['logo'])
@@ -125,8 +126,14 @@ function home(e) {
 				prefixEvent(wrap,'AnimationEnd', function () {
 					changeUp(wrap, centre, nom, home, suggest, 'Suggest Movies');
 				});
-			} else {
+			} else if (start) {
 				changeUp(start, centre, nom, home, suggest, 'Suggest Movies');
+			} else {
+				cent1.className = "fadeout-centre";
+				prefixEvent(cent1,'AnimationEnd', function () {
+					cent1.parentNode.removeChild(cent1);
+					append(document.body,[centre]);
+				});
 			}
 		}
 	}
@@ -257,7 +264,7 @@ function balance(array, ul, tagbox, kept) {
 	if (tagbox.hasAttribute('style'))
 		tagbox.removeAttribute('style');
 	if (window.innerWidth > 688 && avg < 7.5)
-		tagbox.style.width = Math.round(100-10*(7.5-avg))+'%';
+		tagbox.style.width = Math.round(100-9*(7.5-avg))+'%';
   num = Math.floor(array.length / 2);
 	shortest = [].concat((array.sort(function (a, b) { return a.length - b.length; })).splice(0,num));
   while (shortest.length || array.length) {
@@ -353,7 +360,7 @@ function nominateMovie(e) {
 				// Show error message to user
 				console.log('Hmm. Something fishy is going on.');
 			} else {
-				// Show thank you page
+				// Show thank you pageg
 				console.log(response);
 			}
 		}
@@ -365,11 +372,38 @@ function getMovie(e) {
 	[].forEach.call(active, function (tag) {
 		array.push(tag.innerHTML);
 	});
-	request('POST','scripts/suggestion.php','tags='+array.join(','),callback);
-	function callback(request) {
-		if (request.readyState === 4) {
-			var response = JSON.parse(request.responseText);
-			console.log(response);
+	request('POST','scripts/suggestion.php','tags='+array.join(','),movieback);
+}
+function movieback(req) {
+		if (req.readyState === 4) {
+			var json = JSON.parse(req.responseText)
+			  , centre = $('centre')
+			  , suggest = elem('div','centre',['fadein-centre'])
+			  , h1 = elem('h1',null,['title'])
+			  , title = document.createTextNode(json.title+' ('+json.year+')')
+			  , video = elem('div',null,['video'])
+			  , contain = elem('div',null,['video-container'])
+			  , iframe = elem('iframe')
+			  , p = elem('p')
+			  , rating = document.createTextNode(json.rating+'% liked this movie on Rotten Tomatoes.')
+			  , buttons = elem('div',null,['buttons'])
+			  , back = elem('a','back',['button'])
+			  , backText = document.createTextNode('Return to Shuffler')
+			  , again = elem('a','again',['button'])
+			  , againText = document.createTextNode('Show Another')
+			  , tags = json.tags;
+			iframe.setAttribute('src','http://www.youtube.com/embed/'+json.trailer+'?rel=0&showinfo=0');
+			iframe.setAttribute('frameborder',0);
+			iframe.setAttribute('allowfullscreen','');
+			back.addEventListener('click',home,false);
+			again.addEventListener('click', function () {
+				request('POST','scripts/suggestion.php','tags='+tags,movieback);
+			}, false);
+			prefixEvent(suggest,'AnimationEnd',remove);
+			centre.classList.add('fadeout-centre');
+			prefixEvent(centre,'AnimationEnd', function () {
+				centre.parentNode.removeChild(centre);
+				append(document.body,[append(suggest,[append(h1,[title]),append(video,[append(contain,[iframe])]),append(p,[rating]),append(buttons,[append(again,[againText]),append(back,[backText])])])]);
+			});
 		}
 	}
-}

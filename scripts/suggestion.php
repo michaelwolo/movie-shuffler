@@ -59,11 +59,10 @@ while($stmt->fetch()) {
 	$title = $ti;
 	$year = $y;
 	$trailer = $tr;
-	// <iframe width="560" height="315" src="//www.youtube.com/embed/bLBSoC_2IY8?rel=0" frameborder="0" allowfullscreen></iframe>
 	$RTID = $rt;
 }
 $stmt->close();
-$json = '{"title":"' . $title . '","year":' . $year . ',"rating":' . rotten($RTID) . ',"trailer":"' . $trailer . '"}';
+$json = '{"title":"' . $title . '","year":' . $year . ',"rating":' . rotten($RTID) . ',"trailer":"' . $trailer . '","tags":"' . $tagList . '"}';
 echo $json;
 
 function rotten($id) {

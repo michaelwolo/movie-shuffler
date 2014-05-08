@@ -25,8 +25,7 @@ if ($tagArray) {
     }
     $stmt->close();
     addTags($tagArray, $id);
-    echo "Tags were added to current entry.";
-    // Show thank you (demo?) page
+    lookup($id);
   } else if (checkTitle($title)) {
     $movie = checkTitle($title);
     $stmt = $mysqli->prepare("INSERT INTO `movies` (Title,Year,AudienceRating,Trailer,RTID) VALUES (?,?,?,?,?)");
@@ -137,6 +136,36 @@ function checkDuplicates($mid, $tid) {
   } else {
     return false;
   }
+}
+
+function lookup($id) {
+  global $mysqli;
+  $stmt = $mysqli->prepare("SELECT `Title`,`Year`,`Trailer`,`RTID` FROM `movies` WHERE `ID` = ?");
+  $stmt->bind_param("i", $id);
+  $stmt->execute();
+  $stmt->bind_result($ti, $y, $tr, $rt);
+  while($stmt->fetch()) {
+    $title = $ti;
+    $year = $y;
+    $trailer = $tr;
+    $RTID = $rt;
+  }
+  $stmt->close();
+  $json = '{"title":"' . $title . '","year":' . $year . ',"rating":' . rotten($RTID) . ',"trailer":"' . $trailer . '"}';
+  echo $json;
+}
+
+function rotten($id) {
+  global $rtkey;
+  $endpoint = 'http://api.rottentomatoes.com/api/public/v1.0/movies/'.$id.'.json?apikey='.$rtkey;
+  $session = curl_init($endpoint);
+  curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
+  $data = curl_exec($session);
+  curl_close($session);
+  $movie = json_decode($data);
+  if ($movie === NULL) die('Error parsing JSON');
+  $rating = $movie->ratings->audience_score;
+  return $rating;
 }
 
 function youtube($title) {

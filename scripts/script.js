@@ -99,7 +99,6 @@ function home(e) {
 		if (request.readyState === 4) {
 			var tags = JSON.parse(request.responseText)
 			  , total = 17
-			  , start = $('start')
 			  , wrap = $('wrap')
 			  , cent1 = $('centre')
 	  		, centre = elem('div','centre',['fadein-centre'])
@@ -126,8 +125,8 @@ function home(e) {
 				prefixEvent(wrap,'AnimationEnd', function () {
 					changeUp(wrap, centre, nom, home, suggest, 'Suggest Movies');
 				});
-			} else if (start) {
-				changeUp(start, centre, nom, home, suggest, 'Suggest Movies');
+			} else if (!cent1.firstChild) {
+				changeUp(cent1, centre, nom, home, suggest, 'Suggest Movies');
 			} else {
 				cent1.className = "fadeout-centre";
 				prefixEvent(cent1,'AnimationEnd', function () {

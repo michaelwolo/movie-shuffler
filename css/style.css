@@ -157,7 +157,7 @@ li {
 	background: #BD2626;
 }
 .buttons {
-	margin: 20px auto 0;
+	margin: 10px auto 0;
 	text-align: center;
 }
 .button, .choice {
@@ -176,10 +176,8 @@ li {
 	user-select: none;
 }
 .buttons .button {
+	margin: 10px;
 	padding-bottom: 11px;
-}
-.buttons .button:nth-child(2) {
-	margin-top: 20px;
 }
 .button:hover, .choice:hover {
 	background: #A01515;
@@ -840,5 +838,8 @@ input {
   }
   .tag, .active {
     padding: 8px 10px 9px;
+  }
+  .buttons .button {
+  	padding: 9px 20px 10px;
   }
 }

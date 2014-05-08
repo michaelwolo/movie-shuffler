@@ -145,16 +145,16 @@ li {
 	box-shadow: inset 0 1px 0 0 #9A2020, 0 1px 0 0 #440000;
 }
 .active {
-	background: #BB2D2D;
+	background: #C33;
 	top: 1px;
 	box-shadow: inset 0 1px 0 0 #B33, 0 2px 0 0 #440000;
 }
 .active:hover {
-	background: #C53636;
+	background: #D44;
 	cursor: pointer;
 }
 .active:active {
-	background: #BB2424;
+	background: #BD2626;
 }
 .buttons {
 	margin: 20px auto 0;
@@ -176,8 +176,10 @@ li {
 	user-select: none;
 }
 .buttons .button {
-	margin: 5px 10px;
 	padding-bottom: 11px;
+}
+.buttons .button:nth-child(2) {
+	margin-top: 20px;
 }
 .button:hover, .choice:hover {
 	background: #A01515;
@@ -649,6 +651,14 @@ input {
 	.info {
 		width: 60%;
 	}
+	.video {
+		margin: -11px 0 0;
+	}
+	#centre p {
+		width: 80%;
+		margin: 20px auto 0;
+		font-size: 18px;
+	}
 }
 @media all and (max-height: 630px), all and (max-width: 600px) {
 	html {
@@ -665,7 +675,7 @@ input {
 		transform: none;
 	}
 	.title {
-		margin: -60px 0 30px;
+		margin: -60px auto 30px;
 	}
 	@-webkit-keyframes fadein-centre {
 		0%   {
@@ -771,9 +781,6 @@ input {
 	h1 {
 		font-size: 26px;
 	}
-	input {
-		/*width: 90%;*/
-	}
 }
 @media all and (max-width: 423px) {
 	#results li {
@@ -789,6 +796,11 @@ input {
 	}
 }
 @media only screen and (-webkit-device-pixel-ratio: .75) and (max-device-width: 768px), only screen and (-webkit-device-pixel-ratio: 1) and (max-device-width: 768px), only screen and (-webkit-device-pixel-ratio: 1.5) and (max-device-width: 768px), only screen and (-webkit-device-pixel-ratio: 2) and (max-device-width: 768px) {
+	body {
+		min-height: 0;
+		background: #600;
+		background-attachment: scroll;
+	}
 	html {
 		-webkit-text-size-adjust: 100%;
 	}
@@ -804,6 +816,9 @@ input {
 		width: 75%;
 		margin: -1px auto 25px;
 		font-size: 18px;
+	}
+	#centre .title {
+		font-size: 20px;
 	}
 	#tagbox {
 		padding: 5px 10px;

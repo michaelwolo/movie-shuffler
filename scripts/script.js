@@ -130,8 +130,7 @@ function home(e) {
 			} else {
 				cent1.className = "fadeout-centre";
 				prefixEvent(cent1,'AnimationEnd', function () {
-					cent1.parentNode.removeChild(cent1);
-					append(document.body,[centre]);
+					changeUp(cent1, centre, nom, home, suggest, 'Suggest Movies');
 				});
 			}
 		}
@@ -143,7 +142,7 @@ function changeUp(rid, add, nom, f1, f2, text, input) {
 	nom.removeEventListener('click',f1,false);
 	nom.addEventListener('click',f2,false);
 	append(document.body,[add]);
-	if (add.id === 'wrap' && !/Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent))
+	if (input && !/Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent))
 		input.focus();
 }
 function remove(e) {
@@ -371,7 +370,7 @@ function nominateMovie(e) {
 			    , buttons = elem('div',null,['buttons'])
 			    , again = elem('a','back',['button'])
 			    , againText = document.createTextNode('Make Another Suggestion')
-			    , thanks = document.createTextNode('Thanks! Time to relax with a good trailer.');
+			    , thanks = document.createTextNode('Thanks! Enjoy the trailer.');
 			  iframe.setAttribute('src','http://www.youtube.com/embed/'+json.trailer+'?rel=0&showinfo=0');
 				iframe.setAttribute('frameborder',0);
 				iframe.setAttribute('allowfullscreen','');

@@ -115,7 +115,7 @@ function addTags($array, $id) {
 
 function increaseCount($mid, $tid, $count) {
   global $mysqli;
-  $stmt = $mysqli->prepare("UPDATE `movies_tags` SET `Count`=? WHERE `MovieID`=? AND `TagID`=?");
+  $stmt = $mysqli->prepare("UPDATE `movies_tags` SET `Count` = ? WHERE `MovieID` = ? AND `TagID` = ?");
   $stmt->bind_param("iii", $count, $mid, $tid);
   $stmt->execute();
   $stmt->close();
@@ -140,18 +140,28 @@ function checkDuplicates($mid, $tid) {
 
 function lookup($id) {
   global $mysqli;
-  $stmt = $mysqli->prepare("SELECT `Title`,`Year`,`Trailer`,`RTID` FROM `movies` WHERE `ID` = ?");
+  $stmt = $mysqli->prepare("SELECT `Title`,`Year`,`AudienceRating`,`Trailer`,`RTID` FROM `movies` WHERE `ID` = ?");
   $stmt->bind_param("i", $id);
   $stmt->execute();
-  $stmt->bind_result($ti, $y, $tr, $rt);
+  $stmt->bind_result($ti, $y, $ar, $tr, $rt);
   while($stmt->fetch()) {
     $title = $ti;
     $year = $y;
+    $oldrating = $ar;
     $trailer = $tr;
     $RTID = $rt;
   }
   $stmt->close();
-  $json = '{"title":"' . $title . '","year":' . $year . ',"rating":' . rotten($RTID) . ',"trailer":"' . $trailer . '"}';
+  $rating = rotten($RTID);
+  if ($rating) {
+    $stmt = $mysqli->prepare("UPDATE `movies` SET `AudienceRating` = ? WHERE `ID` = ?");
+    $stmt->bind_param("ii", $rating, $id);
+    $stmt->execute();
+    $stmt->close();
+  } else {
+    $rating = $oldrating;
+  }
+  $json = '{"title":"' . $title . '","year":' . $year . ',"rating":' . $rating . ',"trailer":"' . $trailer . '"}';
   echo $json;
 }
 

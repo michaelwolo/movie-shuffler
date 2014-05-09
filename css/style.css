@@ -97,7 +97,7 @@ nav {
 	background: -webkit-radial-gradient(top,rgba(0,0,0,0.2), rgba(0,0,0,0.1));
 	background: -moz-radial-gradient(top,rgba(0,0,0,0.2), rgba(0,0,0,0.1));
 	background: -o-radial-gradient(top,rgba(0,0,0,0.2), rgba(0,0,0,0.1));
-	background: radial-gradient(top,rgba(0,0,0,0.2), rgba(0,0,0,0.1));
+	background: radial-gradient(ellipse farthest-corner at center top, rgba(0,0,0,0.2), rgba(0,0,0,0.1));
 	border-radius: 5px;
 	box-shadow: 0 0 0 1px #440000, inset 0 2px 0 0 #440000;
 	text-align: center;

@@ -234,7 +234,7 @@ function selectChoice(e) {
 	request('POST','scripts/tags.php',null,callback);
 	function callback(request) {
 		if (request.readyState === 4) {
-			var tags = JSON.parse(request.responseText);
+			var tags = JSON.parse(request.responseText).sort();
 			for (var i = 0; i < tags.length; i++) {
 				addTag(tags[i], ul);
 			}
@@ -309,6 +309,7 @@ function shuffle(e) {
 	  , keep = []
 	  , leave = []
 	  , newTags = [];
+	e.target.removeEventListener('click',shuffle,false);
 	[].forEach.call(tags, function (tag) {
 		leave.push(tag.innerText || tag.textContent);
 	});

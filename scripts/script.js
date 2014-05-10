@@ -94,6 +94,7 @@ function suggest(e) {
 	});
 }
 function home(e) {
+	e.target.removeEventListener('click',home,false);
 	request('POST','scripts/tags.php',null,callback);
 	function callback(request) {
 		if (request.readyState === 4) {
@@ -387,7 +388,14 @@ function nominateMovie(e) {
 }
 function getMovie(e) {
 	var active = document.querySelectorAll('.active')
-	  , array = [];
+	  , array = []
+	  , loading = setTimeout(function () {
+	  		if (e.target) {
+	  			e.target.style.width = e.target.offsetWidth+'px';
+	  	    e.target.innerHTML = 'Loading..';
+	  		}
+	    }, 600);
+	e.target.removeEventListener('click',getMovie,false);
 	[].forEach.call(active, function (tag) {
 		array.push(tag.innerHTML);
 	});
@@ -415,7 +423,14 @@ function movieback(req) {
 		iframe.setAttribute('frameborder',0);
 		iframe.setAttribute('allowfullscreen','');
 		back.addEventListener('click',home,false);
-		again.addEventListener('click', function () {
+		again.addEventListener('click', function another(e) {
+			var loading = setTimeout(function () {
+			  		if (e.target) {
+			  			e.target.style.width = e.target.offsetWidth+'px';
+			  	    e.target.innerHTML = 'Loading..';
+			  		}
+			    }, 600);
+			again.removeEventListener('click',another,false);
 			request('POST','scripts/suggestion.php','tags='+tags,movieback);
 		}, false);
 		prefixEvent(suggest,'AnimationEnd',remove);

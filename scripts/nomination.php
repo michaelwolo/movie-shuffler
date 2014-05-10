@@ -56,8 +56,10 @@ function checkTitle($title) {
   $movies = $search_results->movies;
   $confirm = false;
   foreach ($movies as $movie) {
-    if ($movie->title === $title AND $movie->year == $year) {
-      $mov["title"] = $movie->title;
+    $char = strrpos($movie->title, " (");
+    $sub = substr($movie->title, 0, $char); // Check against title without parentheses
+    if (($movie->title === $title || $sub === $title) AND $movie->year == $year) {
+      $mov["title"] = $title;
       $mov["year"] = $movie->year;
       $mov["rating"] = $movie->ratings->audience_score;
       $mov["id"] = $movie->id;

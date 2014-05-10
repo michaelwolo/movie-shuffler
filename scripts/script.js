@@ -348,7 +348,13 @@ function nominateMovie(e) {
 	  , tags = '&tags='
 	  , array = []
 	  , active = document.querySelectorAll('.active')
-	  , wrap = $('wrap');
+	  , wrap = $('wrap')
+	  , loading = setTimeout(function () {
+	  		if (e.target) {
+	  			e.target.style.width = e.target.offsetWidth+'px';
+	  	    e.target.innerHTML = 'Loading..';
+	  		}
+	    }, 600);
 	[].forEach.call(active, function (tag) {
 		array.push(tag.innerHTML);
 	});

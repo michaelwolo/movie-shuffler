@@ -9,7 +9,7 @@ if($mysqli->connect_errno) {
 
 $tagList = $_POST['tags'];
 
-$tags = explode(',', $tagList); //take a string with items separated by a comma and make an array of the items
+$tags = explode(',', $tagList); // Make an array of tags
 $safe = array();
 for ($i = 0; $i < count($tags); $i++) {
 	$stmt = $mysqli->prepare("SELECT `ID` FROM `tags` WHERE `Tag` = ?");
@@ -24,7 +24,14 @@ for ($i = 0; $i < count($tags); $i++) {
   $stmt->close();
 }
 $count = count($safe);
-$tagsList = implode('\',\'', $safe); //take an array of items and make a string, separating the items with a comma
+for ($i = 0; $i < $count; $i++) {
+  // Increment count of each tag to track popularity of each
+  $stmt = $mysqli->prepare("UPDATE `tags` SET `Count` = `Count` + 1 WHERE `ID` = ?");
+  $stmt->bind_param("i", $safe[$i]);
+  $stmt->execute();
+  $stmt->close();
+}
+$tagsList = implode('\',\'', $safe); // Make a string, separating the tags with a comma
 $midArray = array();
 while ($count) {
 	$query = "SELECT `MovieID` FROM `movies_tags` WHERE `TagID` IN ('$tagsList') GROUP BY `MovieID` HAVING count(distinct `TagID`) = $count";

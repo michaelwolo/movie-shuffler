@@ -219,6 +219,19 @@ li {
 	background: #991A1A;
 	box-shadow: inset 0 1px 0 0 #951B1B, 0 1px 0 0 #440000;
 }
+#reel {
+	width: 60px;
+	height: 60px;
+	margin-left: -30px;
+	background: url(../img/reel.svg);
+	background-size: contain;
+	position: absolute;
+	top: 45%;
+	left: 50%;
+	-webkit-transform: translate(-50%, -50%);
+	ms-transform: translate(-50%, -50%);
+	transform: translate(-50%, -50%);
+}
 
 /* Nomination Page Specific Styling */
 
@@ -248,7 +261,7 @@ h5 {
 #wrap {
 	width: 650px;
 	max-width: 90%;
-	margin: 0 auto;
+	margin: 0 auto 20px;
 	text-align: center;
 }
 input {
@@ -340,6 +353,13 @@ input {
 		  -ms-animation: fadeout-tagline 0.15s ease-out forwards;
 			 -o-animation: fadeout-tagline 0.15s ease-out forwards;
 					animation: fadeout-tagline 0.15s ease-out forwards;
+}
+.spinning {
+	-webkit-animation: spinning 0.8s infinite;
+		 -moz-animation: spinning 0.8s infinite;
+		  -ms-animation: spinning 0.8s infinite;
+			 -o-animation: spinning 0.8s infinite;
+					animation: spinning 0.8s infinite;
 }
 .fadein-centre {
 	-webkit-animation: fadein-centre 0.1s ease forwards;
@@ -449,6 +469,21 @@ input {
 		opacity: 0;
 	}
 }
+
+
+@-webkit-keyframes spinning {
+	0%   {
+		-webkit-transform: rotate(0deg);
+	}
+	30%  {
+		-webkit-transform: rotate(40deg);
+	}
+	100% {
+		-webkit-transform: rotate(180deg);
+	}
+}
+
+
 @-webkit-keyframes fadein-centre {
 	0%   {
 		-webkit-transform: translate(-50%, -50%) scale(0.95);
@@ -659,7 +694,7 @@ input {
 		font-size: 18px;
 	}
 }
-@media all and (max-height: 630px), all and (max-width: 600px) {
+@media all and (max-height: 660px), all and (max-width: 600px) {
 	html {
 		overflow-x: hidden;
 	}
@@ -777,6 +812,10 @@ input {
 	#centre {
 		margin: 10px auto 0;
 	}
+	.title {
+		margin: 0 auto 30px;
+		font-size: 30px;
+	}
 	h1 {
 		font-size: 26px;
 	}
@@ -792,6 +831,9 @@ input {
 	}
 	.info {
 		width: 100%;
+	}
+	.title {
+		font-size: 20px;
 	}
 }
 @media only screen and (-webkit-device-pixel-ratio: .75) and (max-device-width: 768px), only screen and (-webkit-device-pixel-ratio: 1) and (max-device-width: 768px), only screen and (-webkit-device-pixel-ratio: 1.5) and (max-device-width: 768px), only screen and (-webkit-device-pixel-ratio: 2) and (max-device-width: 768px) {

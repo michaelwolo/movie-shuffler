@@ -33,7 +33,7 @@ if ($tagArray) {
     $stmt->execute();
     $id = $mysqli->insert_id;
     addTags($tagArray, $id);
-    echo '{"title":"' . $movie["title"] . '","year":' . $movie["year"] . ',"rating":' . $movie["rating"] . ',"trailer":"' . youtube($movie["title"]) . '"}';
+    echo '{"title":"' . $movie["title"] . '","year":' . $movie["year"] . ',"rating":' . $movie["rating"] . ',"trailer":"' . youtube($movie["title"], $movie["year"]) . '"}';
   } else {
     echo "Error";
   }
@@ -150,14 +150,15 @@ function lookup($id) {
     $title = $ti;
     $year = $y;
     $oldrating = $ar;
-    $trailer = $tr;
+    $oldtrailer = $tr;
     $RTID = $rt;
   }
   $stmt->close();
   $rating = rotten($RTID);
+  $trailer = youtube($title, $year);
   if ($rating) {
-    $stmt = $mysqli->prepare("UPDATE `movies` SET `AudienceRating` = ? WHERE `ID` = ?");
-    $stmt->bind_param("ii", $rating, $id);
+    $stmt = $mysqli->prepare("UPDATE `movies` SET `AudienceRating` = ?, `Trailer` = ? WHERE `ID` = ?");
+    $stmt->bind_param("isi", $rating, $trailer, $id);
     $stmt->execute();
     $stmt->close();
   } else {
@@ -180,7 +181,7 @@ function rotten($id) {
   return $rating;
 }
 
-function youtube($title) {
+function youtube($title, $year) {
   global $ytkey;
   $video = '';
   if ($title) {
@@ -193,8 +194,11 @@ function youtube($title) {
     $youtube = new Google_Service_YouTube($client);
     try {
       $searchResponse = $youtube->search->listSearch('id', array(
-        'q' => $title . " official trailer",
+        'q' => $title . " " . $year . " official trailer",
         'maxResults' => $max,
+        'regionCode' => 'CA',
+        'type' => 'video',
+        'videoDuration' => 'short'
       ));
       foreach ($searchResponse['items'] as $searchResult) {
         switch ($searchResult['id']['kind']) {

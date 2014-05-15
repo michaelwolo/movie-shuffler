@@ -1,4 +1,8 @@
-window.addEventListener('load',home,false);
+window.addEventListener('load',attach, false);
+function attach(e) {
+	FastClick.attach(document.body);
+	home(e);
+}
 function $(el) {
 	return document.getElementById(el);
 }
@@ -24,10 +28,12 @@ function prefixEvent(el, type, callback, remove) {
 	for (var i = 0; i < pfx.length; i++) {
 		if (!pfx[i])
 			type = type.toLowerCase();
-		if (remove)
+		if (remove) {
 			el.removeEventListener(pfx[i]+type, callback, false);
-		else
+		}
+		else {
 			el.addEventListener(pfx[i]+type, callback, false);
+		}
 		// prefixEvent(el, "AnimationStart", AnimationListener);
 		// prefixEvent(el, "AnimationIteration", AnimationListener);
 		// prefixEvent(el, "AnimationEnd", AnimationListener);
@@ -148,7 +154,9 @@ function changeUp(rid, add, nom, f1, f2, text, input) {
 }
 function remove(e) {
 	if (e.target.tagName.toLowerCase() === 'a') {
-		e.target.classList.remove("popping");
+		e.target.classList.remove('popping');
+	} else if (e.target.id === 'reel') {
+		e.target.classList.remove('fadein-centre');
 	} else {
 		e.target.removeAttribute('class');
 	}
@@ -263,7 +271,7 @@ function balance(array, ul, tagbox, kept) {
 	if (tagbox.hasAttribute('style'))
 		tagbox.removeAttribute('style');
 	if (window.innerWidth > 688 && avg < 7.5)
-		tagbox.style.width = Math.round(100-9*(7.5-avg))+'%';
+		tagbox.style.width = Math.round(100-8.8*(7.5-avg))+'%';
   num = Math.floor(array.length / 2);
 	shortest = [].concat((array.sort(function (a, b) { return a.length - b.length; })).splice(0,num));
   while (shortest.length || array.length) {
@@ -394,7 +402,9 @@ function nominateMovie(e) {
 	}
 }
 function getMovie(e) {
-	var active = document.querySelectorAll('.active')
+	var centre = $('centre')
+	  , reel = elem('div','reel',['spinning'])
+	  , active = document.querySelectorAll('.active')
 	  , array = []
 	  , loading = setTimeout(function () {
 	  		if (e.target) {
@@ -406,12 +416,17 @@ function getMovie(e) {
 	[].forEach.call(active, function (tag) {
 		array.push(tag.innerHTML);
 	});
-	request('POST','scripts/suggestion.php','tags='+array.join(','),movieback);
+	centre.classList.add('fadeout-centre');
+	prefixEvent(centre,'AnimationEnd', function () {
+		centre.parentNode.removeChild(centre);
+		append(document.body,[reel]);
+		request('POST','scripts/suggestion.php','tags='+array.join(','),movieback);
+	});
 }
 function movieback(req) {
 	if (req.readyState === 4) {
 		var json = JSON.parse(req.responseText)
-		  , centre = $('centre')
+		  , reel = $('reel')
 		  , suggest = elem('div','centre',['fadein-centre'])
 		  , h1 = elem('h1',null,['title'])
 		  , title = document.createTextNode(json.title+' ('+json.year+')')
@@ -431,20 +446,20 @@ function movieback(req) {
 		iframe.setAttribute('allowfullscreen','');
 		back.addEventListener('click',home,false);
 		again.addEventListener('click', function another(e) {
-			var loading = setTimeout(function () {
-			  		if (e.target) {
-			  			e.target.style.width = e.target.offsetWidth+'px';
-			  	    e.target.innerHTML = 'Loading..';
-			  		}
-			    }, 600);
-			again.removeEventListener('click',another,false);
-			request('POST','scripts/suggestion.php','tags='+tags,movieback);
+			var centre = $('centre')
+			  , newReel = elem('div','reel',['spinning']);
+			centre.classList.add('fadeout-centre');
+			prefixEvent(centre,'AnimationEnd', function () {
+				centre.parentNode.removeChild(centre);
+				append(document.body,[newReel]);
+				request('POST','scripts/suggestion.php','tags='+tags,movieback);
+			});
 		}, false);
 		prefixEvent(suggest,'AnimationEnd',remove);
-		centre.classList.add('fadeout-centre');
-		prefixEvent(centre,'AnimationEnd', function () {
-			centre.parentNode.removeChild(centre);
-			append(document.body,[append(suggest,[append(h1,[title]),append(video,[append(contain,[iframe])]),append(p,[rating]),append(buttons,[append(again,[againText]),append(back,[backText])])])]);
+		console.log('Reel is this: ' + reel);
+		prefixEvent(reel,'AnimationIteration', function () {
+				reel.parentNode.removeChild(reel);
+				append(document.body,[append(suggest,[append(h1,[title]),append(video,[append(contain,[iframe])]),append(p,[rating]),append(buttons,[append(again,[againText]),append(back,[backText])])])]);
 		});
 	}
 }

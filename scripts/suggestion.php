@@ -58,18 +58,17 @@ if ($midArray) {
   $stmt->fetch();
   $stmt->close();
 }
-$stmt = $mysqli->prepare("SELECT `Title`,`Year`,`Trailer`,`RTID` FROM `movies` WHERE `ID` = ?");
+$stmt = $mysqli->prepare("SELECT `Title`,`Year`,`RTID` FROM `movies` WHERE `ID` = ?");
 $stmt->bind_param("i", $choice);
 $stmt->execute();
-$stmt->bind_result($ti, $y, $tr, $rt);
+$stmt->bind_result($ti, $y, $rt);
 while($stmt->fetch()) {
 	$title = $ti;
 	$year = $y;
-	$trailer = $tr;
 	$RTID = $rt;
 }
 $stmt->close();
-$json = '{"title":"' . $title . '","year":' . $year . ',"rating":' . rotten($RTID) . ',"trailer":"' . $trailer . '","tags":"' . $tagList . '"}';
+$json = '{"title":"' . $title . '","year":' . $year . ',"rating":' . rotten($RTID) . ',"trailer":"' . youtube($title, $year) . '","tags":"' . $tagList . '"}';
 echo $json;
 
 function rotten($id) {
@@ -83,6 +82,41 @@ function rotten($id) {
 	if ($movie === NULL) die('Error parsing JSON');
 	$rating = $movie->ratings->audience_score;
 	return $rating;
+}
+
+function youtube($title, $year) {
+  global $ytkey;
+  $video = '';
+  if ($title) {
+    require_once 'Google/Client.php';
+    require_once 'Google/Service/YouTube.php';
+    $DEVELOPER_KEY = $ytkey;
+    $max = 1;
+    $client = new Google_Client();
+    $client->setDeveloperKey($DEVELOPER_KEY);
+    $youtube = new Google_Service_YouTube($client);
+    try {
+      $searchResponse = $youtube->search->listSearch('id', array(
+        'q' => $title . " " . $year . " official trailer",
+        'maxResults' => $max,
+        'regionCode' => 'CA',
+        'type' => 'video',
+        'videoDuration' => 'short'
+      ));
+      foreach ($searchResponse['items'] as $searchResult) {
+        switch ($searchResult['id']['kind']) {
+          case 'youtube#video':
+            $video = sprintf('%s',$searchResult['id']['videoId']);
+            break;
+        }
+      }
+    } catch (Google_ServiceException $e) {
+      $video = "Google Service Exception?";
+    } catch (Google_Exception $e) {
+      $video = "Google Exception?";
+    }
+  }
+  return $video;
 }
 
 $mysqli->close();

@@ -34,9 +34,6 @@ function prefixEvent(el, type, callback, remove) {
 		else {
 			el.addEventListener(pfx[i]+type, callback, false);
 		}
-		// prefixEvent(el, "AnimationStart", AnimationListener);
-		// prefixEvent(el, "AnimationIteration", AnimationListener);
-		// prefixEvent(el, "AnimationEnd", AnimationListener);
 	}
 }
 function activate(e) {
@@ -47,37 +44,19 @@ function activate(e) {
 	e.target.classList.add('active');
 	e.target.removeEventListener('click',activate,false);
 	e.target.addEventListener('click',deactivate,false);
-	// if (!submit.classList.contains('popping'))
-	// 	submit.classList.add('popping');
-	if (!active.length) {
-		if (/\bothers\b/.test(tagline.innerHTML))
-			changeText(tagline, 'Submit your tags when you\'re ready.');
-		else
-			changeText(tagline, 'Submit your tags by clicking the button below.');
-	}
+	if (!active.length)
+		submit.classList.add('glowing');
 }
 function deactivate(e) {
-	var tagline = $('tagline')
+	var submit = $('submit')
+	  , tagline = $('tagline')
 	  , active = document.querySelectorAll('.active');
 	e.target.classList.remove('active');
 	e.target.classList.add('tag');
 	e.target.removeEventListener('click',deactivate,false);
 	e.target.addEventListener('click',activate,false);
-	if (active.length === 1) {
-		if (/\bbelow\b/.test(tagline.innerHTML))
-			changeText(tagline, 'Find movies that match your interests.');
-		else
-			changeText(tagline, 'Tag this movie for others to discover.');
-	}
-}
-function changeText(el, text) {
-	el.setAttribute('class','fadeout-line');
-	prefixEvent(el,'AnimationEnd',fadein);
-	function fadein(e) {
-		el.innerHTML = text;
-		el.setAttribute('class','fadein-line');
-		prefixEvent(el,'AnimationEnd',remove);
-	}
+	if (active.length === 1)
+		submit.classList.remove('glowing');
 }
 function suggest(e) {
 	var centre = $('centre')
@@ -117,6 +96,7 @@ function home(e) {
 	  		, ul = elem('ul','list')
 	  		, buttons = elem('div',null,['buttons'])
 	  		, submit = elem('a','submit',['button'])
+	  		, span = elem('span','get')
 	  		, get = document.createTextNode('Get Movie')
 	  		, nom = $('nominate')
 	  		, array = [];
@@ -126,7 +106,7 @@ function home(e) {
 				array.push(tags[i]);
 			}
 			balance(array, ul, tagbox);
-			append(centre,[append(header,[logo]), append(h1,[tagline]), append(tagbox,[ul]), append(buttons,[append(submit,[get])])]);
+			append(centre,[append(header,[logo]),append(h1,[tagline]),append(tagbox,[ul]),append(buttons,[append(submit,[append(span,[get])])])]);
 			if (wrap) {
 				wrap.className = "fadeout-wrap";
 				prefixEvent(wrap,'AnimationEnd', function () {
@@ -154,7 +134,7 @@ function changeUp(rid, add, nom, f1, f2, text, input) {
 }
 function remove(e) {
 	if (e.target.tagName.toLowerCase() === 'a') {
-		e.target.classList.remove('popping');
+		e.target.classList.remove('fadein-line');
 	} else if (e.target.id === 'reel') {
 		e.target.classList.remove('fadein-centre');
 	} else {
@@ -358,16 +338,16 @@ function nominateMovie(e) {
 	  , array = []
 	  , active = document.querySelectorAll('.active')
 	  , wrap = $('wrap')
-	  , loading = setTimeout(function () {
-	  		if (e.target) {
-	  			e.target.style.width = e.target.offsetWidth+'px';
-	  	    e.target.innerHTML = 'Loading..';
-	  		}
-	    }, 600);
-	[].forEach.call(active, function (tag) {
-		array.push(tag.innerHTML);
+	  , reel = elem('div','reel',['spinning']);
+	wrap.classList.add('fadeout-wrap');
+	prefixEvent(wrap,'AnimationEnd', function () {
+		wrap.parentNode.removeChild(wrap);
+		append(document.body,[reel]);
+		[].forEach.call(active, function (tag) {
+			array.push(tag.innerHTML);
+		});
+		request('POST','scripts/nomination.php',t+title+y+year+tags+array.join(','),callback);
 	});
-	request('POST','scripts/nomination.php',t+title+y+year+tags+array.join(','),callback);
 	function callback(request) {
 		if (request.readyState === 4) {
 			var response = request.responseText;
@@ -375,7 +355,7 @@ function nominateMovie(e) {
 				console.log('Hmm. Something fishy is going on.');
 			} else {
 				var json = JSON.parse(response)
-			    , wrap = $('wrap')
+			    , reel = $('reel')
 			    , centre = elem('div','centre',['fadein-centre'])
 			    , h1 = elem('h1',null,['title'])
 			    , title = document.createTextNode(json.title+' ('+json.year+')')
@@ -392,9 +372,8 @@ function nominateMovie(e) {
 				iframe.setAttribute('allowfullscreen','');
 				again.addEventListener('click',suggest,false);
 				prefixEvent(centre,'AnimationEnd',remove);
-				wrap.classList.add('fadeout-wrap');
-				prefixEvent(wrap,'AnimationEnd', function () {
-					wrap.parentNode.removeChild(wrap);
+				prefixEvent(reel,'AnimationIteration', function () {
+					reel.parentNode.removeChild(reel);
 					append(document.body,[append(centre,[append(h1,[title]),append(video,[append(contain,[iframe])]),append(p,[thanks]),append(buttons,[append(again,[againText])])])]);
 				});
 			}
@@ -456,7 +435,6 @@ function movieback(req) {
 			});
 		}, false);
 		prefixEvent(suggest,'AnimationEnd',remove);
-		console.log('Reel is this: ' + reel);
 		prefixEvent(reel,'AnimationIteration', function () {
 				reel.parentNode.removeChild(reel);
 				append(document.body,[append(suggest,[append(h1,[title]),append(video,[append(contain,[iframe])]),append(p,[rating]),append(buttons,[append(again,[againText]),append(back,[backText])])])]);

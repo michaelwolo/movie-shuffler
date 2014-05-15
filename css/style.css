@@ -469,8 +469,6 @@ input {
 		opacity: 0;
 	}
 }
-
-
 @-webkit-keyframes spinning {
 	0%   {
 		-webkit-transform: rotate(0deg);
@@ -482,8 +480,39 @@ input {
 		-webkit-transform: rotate(180deg);
 	}
 }
-
-
+@-moz-keyframes spinning {
+	0%   {
+		-moz-transform: rotate(0deg);
+	}
+	30%  {
+		-moz-transform: rotate(40deg);
+	}
+	100% {
+		-moz-transform: rotate(180deg);
+	}
+}
+@-o-keyframes spinning {
+	0%   {
+		-o-transform: rotate(0deg);
+	}
+	30%  {
+		-o-transform: rotate(40deg);
+	}
+	100% {
+		-o-transform: rotate(180deg);
+	}
+}
+@keyframes spinning {
+	0%   {
+		transform: rotate(0deg);
+	}
+	30%  {
+		transform: rotate(40deg);
+	}
+	100% {
+		transform: rotate(180deg);
+	}
+}
 @-webkit-keyframes fadein-centre {
 	0%   {
 		-webkit-transform: translate(-50%, -50%) scale(0.95);

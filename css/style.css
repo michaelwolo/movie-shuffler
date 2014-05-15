@@ -191,7 +191,8 @@ li {
 	box-shadow: inset 0 1px 0 0 #B02727, 0 1px 0 0 #440000;
 }
 #submit {
-	padding: 10px 35px 13px;
+	width: 160px;
+	padding: 10px 0 13px;
 	font-size: 20px;
 }
 .about {
@@ -340,19 +341,15 @@ input {
 
 /* CSS Animations */
 
-.fadein-line {
-	-webkit-animation: fadein-tagline 0.15s ease-out forwards;
-		 -moz-animation: fadein-tagline 0.15s ease-out forwards;
-		  -ms-animation: fadein-tagline 0.15s ease-out forwards;
-			 -o-animation: fadein-tagline 0.15s ease-out forwards;
-					animation: fadein-tagline 0.15s ease-out forwards;
+.glowing  {
+	-webkit-animation: glowing 1.2s infinite;
+		 -moz-animation: glowing 1.2s infinite;
+		  -ms-animation: glowing 1.2s infinite;
+			 -o-animation: glowing 1.2s infinite;
+					animation: glowing 1.2s infinite;
 }
-.fadeout-line {
-	-webkit-animation: fadeout-tagline 0.15s ease-out forwards;
-		 -moz-animation: fadeout-tagline 0.15s ease-out forwards;
-		  -ms-animation: fadeout-tagline 0.15s ease-out forwards;
-			 -o-animation: fadeout-tagline 0.15s ease-out forwards;
-					animation: fadeout-tagline 0.15s ease-out forwards;
+.glowing:hover {
+	-webkit-animation-play-state: paused;
 }
 .spinning {
 	-webkit-animation: spinning 0.8s infinite;
@@ -389,84 +386,48 @@ input {
     	 -o-animation: fadeout-wrap 0.1s ease forwards;
         	animation: fadeout-wrap 0.1s ease forwards;
 }
-@-webkit-keyframes fadein-tagline {
+@-webkit-keyframes glowing {
 	0%   {
-		display: none;
-		opacity: 0;
+		background: #901010;
+	}
+	50%  {
+		background: #A22;
 	}
 	100% {
-		display: block;
-		opacity: 1;
+		background: #901010;
 	}
 }
-@-moz-keyframes fadein-tagline {
+@-moz-keyframes glowing {
 	0%   {
-		display: none;
-		opacity: 0;
+		background: #901010;
+	}
+	50%  {
+		background: #A22;
 	}
 	100% {
-		display: block;
-		opacity: 1;
+		background: #901010;
 	}
 }
-@-o-keyframes fadein-tagline {
+@-o-keyframes glowing {
 	0%   {
-		display: none;
-		opacity: 0;
+		background: #901010;
+	}
+	50%  {
+		background: #A22;
 	}
 	100% {
-		display: block;
-		opacity: 1;
+		background: #901010;
 	}
 }
-@keyframes fadein-tagline {
+@keyframes glowing {
 	0%   {
-		display: none;
-		opacity: 0;
+		background: #901010;
+	}
+	50%  {
+		background: #A22;
 	}
 	100% {
-		display: block;
-		opacity: 1;
-	}
-}
-@-webkit-keyframes fadeout-tagline {
-	0%   {
-		display: block;
-		opacity: 1;
-	}
-	100% {
-		display: none;
-		opacity: 0;
-	}
-}
-@-moz-keyframes fadeout-tagline {
-	0%   {
-		display: block;
-		opacity: 1;
-	}
-	100% {
-		display: none;
-		opacity: 0;
-	}
-}
-@-o-keyframes fadeout-tagline {
-	0%   {
-		display: block;
-		opacity: 1;
-	}
-	100% {
-		display: none;
-		opacity: 0;
-	}
-}
-@keyframes fadeout-tagline {
-	0%   {
-		display: block;
-		opacity: 1;
-	}
-	100% {
-		display: none;
-		opacity: 0;
+		background: #901010;
 	}
 }
 @-webkit-keyframes spinning {

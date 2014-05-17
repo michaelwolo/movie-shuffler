@@ -45,7 +45,7 @@ function checkTitle($title) {
   global $rtkey;
   global $year;
   $q = urlencode($title);
-  $num = 5;
+  $num = 10;
   $endpoint = 'http://api.rottentomatoes.com/api/public/v1.0/movies.json?apikey='.$rtkey.'&q='.$q.'&page_limit='.$num;
   $session = curl_init($endpoint);
   curl_setopt($session, CURLOPT_RETURNTRANSFER, true);

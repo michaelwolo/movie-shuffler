@@ -48,26 +48,29 @@ while ($count) {
   $count--;
   $stmt->close();
 }
-if ($midArray) {
-	shuffle($midArray);
-	$choice = $midArray[0];
-} else {
-	$stmt = $mysqli->prepare("SELECT `MovieID` FROM `movies_tags` ORDER BY RAND() LIMIT 1");
+$year = null; // Fix for the issue where $year was mysteriously not showing up
+while (!$year) {
+  if ($midArray) {
+    shuffle($midArray);
+    $choice = $midArray[0];
+  } else {
+    $stmt = $mysqli->prepare("SELECT `MovieID` FROM `movies_tags` ORDER BY RAND() LIMIT 1");
+    $stmt->execute();
+    $stmt->bind_result($choice);
+    $stmt->fetch();
+    $stmt->close();
+  }
+  $stmt = $mysqli->prepare("SELECT `Title`,`Year`,`RTID` FROM `movies` WHERE `ID` = ?");
+  $stmt->bind_param("i", $choice);
   $stmt->execute();
-  $stmt->bind_result($choice);
-  $stmt->fetch();
+  $stmt->bind_result($ti, $y, $rt);
+  while($stmt->fetch()) {
+    $title = $ti;
+    $year = $y;
+    $RTID = $rt;
+  }
   $stmt->close();
 }
-$stmt = $mysqli->prepare("SELECT `Title`,`Year`,`RTID` FROM `movies` WHERE `ID` = ?");
-$stmt->bind_param("i", $choice);
-$stmt->execute();
-$stmt->bind_result($ti, $y, $rt);
-while($stmt->fetch()) {
-	$title = $ti;
-	$year = $y;
-	$RTID = $rt;
-}
-$stmt->close();
 $json = '{"title":"' . $title . '","year":' . $year . ',"rating":' . rotten($RTID) . ',"trailer":"' . youtube($title, $year) . '","tags":"' . $tagList . '"}';
 echo $json;
 

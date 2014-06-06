@@ -80,7 +80,7 @@ function suggest(e) {
 }
 function home(e) {
 	e.target.removeEventListener('click',home,false);
-	request('POST','scripts/tags.php',null,callback);
+	request('POST','../php/tags.php',null,callback);
 	function callback(request) {
 		if (request.readyState === 4) {
 			var tags = JSON.parse(request.responseText)
@@ -152,7 +152,7 @@ function searchTerm(e) {
 	  , results = $('results')
 	  , info = 'search=' + searchTerm;
 	if (searchTerm) {
-		request('POST','scripts/search.php',info,movies);
+		request('POST','../php/search.php',info,movies);
 		$('term').value = '';
 	}
 }
@@ -219,7 +219,7 @@ function selectChoice(e) {
 		wrap.removeChild(wrap.firstChild);
 	}
 	append(wrap,[append(h1,[mov]),append(h2,[tagline]),append(tagbox,[ul]),append(buttons,[append(button,[tag])])]);
-	request('POST','scripts/tags.php',null,callback);
+	request('POST','../php/tags.php',null,callback);
 	function callback(request) {
 		if (request.readyState === 4) {
 			var tags = JSON.parse(request.responseText).sort();
@@ -304,7 +304,7 @@ function shuffle(e) {
 	[].forEach.call(active, function (tag) {
 		keep.push(tag.innerText || tag.textContent);
 	});
-	request('POST','scripts/tags.php',null,callback);
+	request('POST','../php/tags.php',null,callback);
 	function callback(request) {
 		if (request.readyState === 4) {
 			var tags = JSON.parse(request.responseText);
@@ -346,7 +346,7 @@ function nominateMovie(e) {
 		[].forEach.call(active, function (tag) {
 			array.push(tag.innerHTML);
 		});
-		request('POST','scripts/nomination.php',t+title+y+year+tags+array.join(','),callback);
+		request('POST','../php/nomination.php',t+title+y+year+tags+array.join(','),callback);
 	});
 	function callback(request) {
 		if (request.readyState === 4) {
@@ -399,7 +399,7 @@ function getMovie(e) {
 	prefixEvent(centre,'AnimationEnd', function () {
 		centre.parentNode.removeChild(centre);
 		append(document.body,[reel]);
-		request('POST','scripts/suggestion.php','tags='+array.join(','),movieback);
+		request('POST','../php/suggestion.php','tags='+array.join(','),movieback);
 	});
 }
 function movieback(req) {
@@ -431,7 +431,7 @@ function movieback(req) {
 			prefixEvent(centre,'AnimationEnd', function () {
 				centre.parentNode.removeChild(centre);
 				append(document.body,[newReel]);
-				request('POST','scripts/suggestion.php','tags='+tags,movieback);
+				request('POST','../php/suggestion.php','tags='+tags,movieback);
 			});
 		}, false);
 		prefixEvent(suggest,'AnimationEnd',remove);

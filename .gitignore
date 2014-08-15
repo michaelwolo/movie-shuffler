@@ -1,4 +1,12 @@
+#OS Junk Files
 .DS_Store
+
+#Minified Files
 movie.css
 movie.js
+
+#Unnecessary Extras
 red-texture.png
+
+#Node Modules
+angular/node_modules/

@@ -1,0 +1,9 @@
+<div id="tagbox">
+	<ul id="list">
+		<!-- Change "17" to variable that references 17 in controller -->
+		<li ng-repeat="tag in random | limitTo: 17">
+			<a ng-click="toggleActive(tag)" ng-class="{active: tag.active, tag: !tag.active}">{{tag.name}}</a>
+		</li>
+		<a class="shuffle" ng-click="shuffleTags()"></a>
+	</ul>
+</div>

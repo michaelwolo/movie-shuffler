@@ -1,0 +1,12 @@
+<div id="centre" ng-class="{'fadein-centre': array.length}" ng-show="array.length" ng-cloak>
+	<div class="header">
+		<div class="logo"></div>
+	</div>
+	<h1 id="tagline">Find movies that match your interests.</h1>
+	<tagbox size="{{size}}"></tagbox>
+	<div class="buttons">
+		<a id="submit" class="button" ng-click="getMovies(random)">
+			<span id="get">Get Movie</span>
+		</a>
+	</div>
+</div>

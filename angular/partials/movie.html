@@ -1,0 +1,15 @@
+<div id="reel" class="spinning" ng-show="searching"></div>
+<div id="centre" ng-class="{'fadein-centre': !searching, invisible: searching}" ng-cloak>
+	<h1 class="title">{{suggestion.title}} ({{suggestion.year}})</h1>
+	<div class="video">
+		<div class="video-container">
+			<!-- Avoid using ng-src for iframe to prevent caching of trailer cover images -->
+			<iframe src="{{suggestion.trailer}}" frameborder="0"></iframe>
+		</div>
+	</div>
+	<p>{{suggestion.rating}}% liked this movie on Rotten Tomatoes.</p>
+	<div class="buttons">
+		<a id="again" class="button" ng-click="pickOne(movies)">Show Another</a>
+		<a id="back" class="button" ng-click="clearActive()">Return to Shuffler</a>
+	</div>
+</div>

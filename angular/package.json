@@ -1,0 +1,17 @@
+{
+  "name": "movie-shuffler",
+  "version": "0.2.0",
+  "description": "Shuffles through user-generated movie suggestions based on content keywords.",
+  "private": true,
+  "main": "js/app.js",
+  "author": "Michael Woloszuk",
+  "devDependencies": {
+    "grunt": "~0.4.5",
+    "grunt-contrib-concat": "^0.4.0",
+    "grunt-contrib-connect": "^0.8.0",
+    "grunt-contrib-cssmin": "*",
+    "grunt-contrib-sass": "^0.7.3",
+    "grunt-contrib-watch": "^0.6.1",
+    "grunt-open": "^0.2.3"
+  }
+}

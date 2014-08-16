@@ -14,7 +14,8 @@ shuffler.config([ '$routeProvider', '$locationProvider', function ($routeProvide
       // Suggestion Page
       .when('/movie', {
         templateUrl: 'partials/movie.html',
-        controller: 'MovieController'
+        controller: 'MovieController',
+        
       })
       .otherwise({redirectTo:'/'});
       $locationProvider.html5Mode(true);
@@ -73,7 +74,7 @@ shuffler.controller('ShufflerController', [ '$scope', '$http', '$window', '$sce'
   // $scope.shown = [];
 
 
-  // $scope.movies = [];
+  // $scope.$parent.movies = [];
   // $scope.sent = false;
 
   // $scope.first = false;
@@ -86,14 +87,14 @@ shuffler.controller('ShufflerController', [ '$scope', '$http', '$window', '$sce'
     var index = Math.floor(Math.random() * arr.length)
       , result = arr[index];
     arr.splice(index, 1);
-    return(result);
+    return result;
   };
 
   // $scope.loadTags = function () {
   //  $http.get('http://movieshuffler.com/scripts/tags.php').success(function(data){
-  //    // $scope.array = data;
+  //    // $scope.$parent.array = data;
   //    // Temporarily use fake data for extra active property
-  //    $scope.array = [
+  //    $scope.$parent.array = [
   //      {
   //        name: 'weird',
   //        active:false
@@ -165,7 +166,7 @@ shuffler.controller('ShufflerController', [ '$scope', '$http', '$window', '$sce'
   //        active: false
   //      }
   //    ];
-  //    $scope.total.push.apply($scope.total, $scope.array);
+  //    $scope.total.push.apply($scope.total, $scope.$parent.array);
   //    var total = 0
   //      , i = 0
   //      , num = 0
@@ -173,7 +174,7 @@ shuffler.controller('ShufflerController', [ '$scope', '$http', '$window', '$sce'
   //      , shortest = []
   //      , temp = [];
   //    for (i; i < length; i++) {
-  //      temp.push($scope.array[i]);
+  //      temp.push($scope.$parent.array[i]);
   //      total += temp[i].name.length;
   //      // Take from beginning each time because the array mutates after each operation
   //      // TODO: Improve hacky double array algorithm
@@ -185,9 +186,9 @@ shuffler.controller('ShufflerController', [ '$scope', '$http', '$window', '$sce'
   //    shortest = [].concat((temp.sort(function (a, b) { return a.length - b.length; })).splice(0,num));
   //    while (shortest.length || temp.length) {
   //      if (shortest.length)
-  //        $scope.random.push(extractRandom(shortest));
+  //        $scope.$parent.random.push(extractRandom(shortest));
   //      if (temp.length)
-  //        $scope.random.push(extractRandom(temp));
+  //        $scope.$parent.random.push(extractRandom(temp));
   //    }
   //    $scope.first = true;
   //  });
@@ -206,12 +207,12 @@ shuffler.controller('ShufflerController', [ '$scope', '$http', '$window', '$sce'
   //    , shortest = []
   //    , temp = []
   //    , selected = [];
-  //  for (var j = $scope.random.length-1; j >= 0; j--) {
-  //    if ($scope.random[j].active) {
-  //      console.log('Tag is active: ' + $scope.random[j].name);
-  //      selected.unshift($scope.random[j]);
-  //      total += $scope.random[j].name.length;
-  //      $scope.random.splice(j, 1);
+  //  for (var j = $scope.$parent.random.length-1; j >= 0; j--) {
+  //    if ($scope.$parent.random[j].active) {
+  //      console.log('Tag is active: ' + $scope.$parent.random[j].name);
+  //      selected.unshift($scope.$parent.random[j]);
+  //      total += $scope.$parent.random[j].name.length;
+  //      $scope.$parent.random.splice(j, 1);
   //    }
   //  }
   //  console.log('selected [] length: ' + selected.length);
@@ -219,9 +220,9 @@ shuffler.controller('ShufflerController', [ '$scope', '$http', '$window', '$sce'
   //  for (var i = 0; i < required; i++) {
   //    if (!$scope.total.length) {
   //      if (!$scope.shown.length) {
-  //        index = Math.floor(Math.random()*$scope.random.length);
-  //        $scope.total.push($scope.random[index]);
-  //        $scope.random.splice(index, 1);
+  //        index = Math.floor(Math.random()*$scope.$parent.random.length);
+  //        $scope.total.push($scope.$parent.random[index]);
+  //        $scope.$parent.random.splice(index, 1);
   //      } else {
   //        $scope.total = $scope.shown;
   //        $scope.shown = [];
@@ -232,29 +233,29 @@ shuffler.controller('ShufflerController', [ '$scope', '$http', '$window', '$sce'
   //    total += $scope.total[index].name.length;
   //    $scope.total.splice(index, 1);
   //  }
-  //  $scope.shown.push.apply($scope.shown, $scope.random);
+  //  $scope.shown.push.apply($scope.shown, $scope.$parent.random);
   //  console.log('Average: ' + total/length);
   //  $scope.size = Math.round(100-8.8*(7.5-(total / length)));
   //  num = Math.floor(temp.length / 2);
   //  shortest = [].concat((temp.sort(function (a, b) { return a.length - b.length; })).splice(0,num));
-  //  $scope.random = [];
+  //  $scope.$parent.random = [];
   //   while (shortest.length || temp.length) {
   //     if (shortest.length)
-  //       $scope.random.push(extractRandom(shortest));
+  //       $scope.$parent.random.push(extractRandom(shortest));
   //     if (temp.length)
-  //       $scope.random.push(extractRandom(temp));
+  //       $scope.$parent.random.push(extractRandom(temp));
   //   }
   //   if (selected.length) {
-  //    $scope.random.unshift.apply($scope.random, selected);
+  //    $scope.$parent.random.unshift.apply($scope.$parent.random, selected);
   //   }
   // };
 
   // $scope.getMovie = function(array) {
   //  var names = [];
-  //  // if ($scope.movies.length) {
-  //  //  $scope.movies[0].trailer = '';
+  //  // if ($scope.$parent.movies.length) {
+  //  //  $scope.$parent.movies[0].trailer = '';
   //  // }
-  //  $scope.movies = [];
+  //  $scope.$parent.movies = [];
   //  $scope.sent = true;
   //  $scope.first = false;
   //  // $scope.second = false;
@@ -263,24 +264,24 @@ shuffler.controller('ShufflerController', [ '$scope', '$http', '$window', '$sce'
   //      names.push(array[i].name);
   //    }
   //  }
-  //  $scope.array = [];
+  //  $scope.$parent.array = [];
   //  console.log(names);
   //  $http({method: 'POST', data:'tags='+names.join(','), headers: {'Content-Type': 'application/x-www-form-urlencoded'}, url: 'http://movieshuffler.com/php/suggestion.php'}).success(function(data){
   //    $scope.sent = false;
-  //    $scope.movies[0] = data;
-  //    $scope.movies[0].trailer = $sce.trustAsResourceUrl('http://www.youtube.com/embed/'+data.trailer+'?rel=0&amp;showinfo=0');
+  //    $scope.$parent.movies[0] = data;
+  //    $scope.$parent.movies[0].trailer = $sce.trustAsResourceUrl('http://www.youtube.com/embed/'+data.trailer+'?rel=0&amp;showinfo=0');
   //    // $scope.second = true;
-  //    console.log($scope.movies);
+  //    console.log($scope.$parent.movies);
   //  });
   // };
 
   // $scope.clearData = function() {
   //  $scope.loadTags();
-  //  $scope.movies = [];
+  //  $scope.$parent.movies = [];
   //  // $scope.sent = false;
-  //  for (var i = 0; i < $scope.random.length; i++) {
-  //    if ($scope.random[i].active) {
-  //      $scope.random[i].active = false;
+  //  for (var i = 0; i < $scope.$parent.random.length; i++) {
+  //    if ($scope.$parent.random[i].active) {
+  //      $scope.$parent.random[i].active = false;
   //    }
   //  }
   // };
@@ -288,14 +289,14 @@ shuffler.controller('ShufflerController', [ '$scope', '$http', '$window', '$sce'
 
 shuffler.controller('StartController', [ '$scope', '$http', '$location', '$sce', function ($scope, $http, $location, $sce) {
   $scope.total = [];
-  // $scope.random = [];
+  // $scope.$parent.random = [];
   $scope.shown = [];
 
   $scope.loadTags = function () {
     $http.get('http://movieshuffler.com/scripts/tags.php').success(function(data){
-      // $scope.array = data;
+      // $scope.$parent.array = data;
       // Temporarily use fake data for extra active property
-      $scope.array = [
+      $scope.$parent.array = [
         {
           name: 'weird',
           active:false
@@ -367,7 +368,7 @@ shuffler.controller('StartController', [ '$scope', '$http', '$location', '$sce',
           active: false
         }
       ];
-      $scope.total.push.apply($scope.total, $scope.array);
+      $scope.total.push.apply($scope.total, $scope.$parent.array);
       var total = 0
         , i = 0
         , num = 0
@@ -375,7 +376,7 @@ shuffler.controller('StartController', [ '$scope', '$http', '$location', '$sce',
         , shortest = []
         , temp = [];
       for (i; i < length; i++) {
-        temp.push($scope.array[i]);
+        temp.push($scope.$parent.array[i]);
         total += temp[i].name.length;
         // Take from beginning each time because the array mutates after each operation
         // TODO: Improve hacky double array algorithm
@@ -385,12 +386,12 @@ shuffler.controller('StartController', [ '$scope', '$http', '$location', '$sce',
       $scope.size = Math.round(100-8.8*(7.5-(total / length)));
       num = Math.floor(temp.length / 2);
       shortest = [].concat((temp.sort(function (a, b) { return a.length - b.length; })).splice(0,num));
-      // $scope.random = [];
+      // $scope.$parent.random = [];
       while (shortest.length || temp.length) {
         if (shortest.length)
-          $scope.random.push($scope.extractRandom(shortest));
+          $scope.$parent.random.push($scope.extractRandom(shortest));
         if (temp.length)
-          $scope.random.push($scope.extractRandom(temp));
+          $scope.$parent.random.push($scope.extractRandom(temp));
       }
       $scope.first = true;
     });
@@ -409,12 +410,12 @@ shuffler.controller('StartController', [ '$scope', '$http', '$location', '$sce',
       , shortest = []
       , temp = []
       , selected = [];
-    for (var j = $scope.random.length-1; j >= 0; j--) {
-      if ($scope.random[j].active) {
-        console.log('Tag is active: ' + $scope.random[j].name);
-        selected.unshift($scope.random[j]);
-        total += $scope.random[j].name.length;
-        $scope.random.splice(j, 1);
+    for (var j = $scope.$parent.random.length-1; j >= 0; j--) {
+      if ($scope.$parent.random[j].active) {
+        console.log('Tag is active: ' + $scope.$parent.random[j].name);
+        selected.unshift($scope.$parent.random[j]);
+        total += $scope.$parent.random[j].name.length;
+        $scope.$parent.random.splice(j, 1);
       }
     }
     console.log('selected [] length: ' + selected.length);
@@ -422,9 +423,9 @@ shuffler.controller('StartController', [ '$scope', '$http', '$location', '$sce',
     for (var i = 0; i < required; i++) {
       if (!$scope.total.length) {
         if (!$scope.shown.length) {
-          index = Math.floor(Math.random()*$scope.random.length);
-          $scope.total.push($scope.random[index]);
-          $scope.random.splice(index, 1);
+          index = Math.floor(Math.random()*$scope.$parent.random.length);
+          $scope.total.push($scope.$parent.random[index]);
+          $scope.$parent.random.splice(index, 1);
         } else {
           $scope.total = $scope.shown;
           $scope.shown = [];
@@ -435,96 +436,81 @@ shuffler.controller('StartController', [ '$scope', '$http', '$location', '$sce',
       total += $scope.total[index].name.length;
       $scope.total.splice(index, 1);
     }
-    $scope.shown.push.apply($scope.shown, $scope.random);
+    $scope.shown.push.apply($scope.shown, $scope.$parent.random);
     console.log('Average: ' + total/length);
     $scope.size = Math.round(100-8.8*(7.5-(total / length)));
     num = Math.floor(temp.length / 2);
     shortest = [].concat((temp.sort(function (a, b) { return a.length - b.length; })).splice(0,num));
-    $scope.random = [];
+    $scope.$parent.random = [];
     while (shortest.length || temp.length) {
       if (shortest.length)
-        $scope.random.push($scope.extractRandom(shortest));
+        $scope.$parent.random.push($scope.extractRandom(shortest));
       if (temp.length)
-        $scope.random.push($scope.extractRandom(temp));
+        $scope.$parent.random.push($scope.extractRandom(temp));
     }
     if (selected.length) {
-      $scope.random.unshift.apply($scope.random, selected);
+      $scope.$parent.random.unshift.apply($scope.$parent.random, selected);
     }
   };
 
-  // $scope.changeView = function (view) {
-  //  $location.path(view); // path not hash
- //  };
-
-  $scope.getMovies = function (array) {
-    // Clear previously selected tags
-    $scope.selected = [];
-    for (var i = 0; i < array.length; i++) {
-      if (array[i].active) {
-        $scope.selected.push(array[i].name);
-      }
-    }
-    $http({method: 'POST', data:'tags='+$scope.selected.join(','), headers: {'Content-Type': 'application/x-www-form-urlencoded'}, url: 'http://movieshuffler.com/php/suggestion.php'}).success(function(data){
-      // $scope.movies = data;
-      // Temporarily use fake data to simulate returned array
-      $scope.movies = [
-        {
-          title: "This is the End",
-          year: 2013,
-          rating: 72,
-          trailer: "Yma-g4gTwlE"
-        },{
-          title: "Twelve Monkeys",
-          year: 1995,
-          rating: 88,
-          trailer: "15s4Y9ffW_o"
-        }
-      ];
-      // Flesh out YouTube URL for all YouTube trailer IDs
-      for (var i = 0; i < $scope.movies.length; i++) {
-        $scope.movies[i].trailer = $sce.trustAsResourceUrl('http://www.youtube.com/embed/'+$scope.movies[i].trailer+'?rel=0&amp;showinfo=0');
-      }
-      console.log($scope.movies);
-      $location.path('/movie');
-    });
+  $scope.changeView = function (view) {
+   $location.path(view); // path not hash
   };
 }]);
 
-shuffler.controller('MovieController', [ '$scope', '$http', '$location', function ($scope, $http, $location) {
+shuffler.controller('MovieController', [ '$scope', '$http', '$location', '$sce', function ($scope, $http, $location, $sce) {
   $scope.seen = [];
   $scope.searching = true;
+  $scope.suggestion = {};
+  $scope.disabled = false;
 
-  console.log($scope.movies);
-
-  // Pull additional suggestions from relevant list, ensuring not to repeat unless all have been shown
-  $scope.pickOne = function (arr) {
-    console.log(arr);
+  $scope.getMovie = function (array) {
+    // Clear previous suggestion to ensure previous trailer image does not flicker prior to loading new trailer
+    $scope.suggestion = {};
     if (!$scope.searching) {
       $scope.searching = true;
     }
-    if (!arr.length) {
-      $scope.movies = $scope.seen;
-      $scope.seen = [];
+    // Clear previously selected tags
+    $scope.$parent.selected = [];
+    for (var i = 0; i < array.length; i++) {
+      if (array[i].active) {
+        $scope.$parent.selected.push(array[i].name);
+      }
     }
-    // TODO: Move extractRandom to Angular service
-    $scope.suggestion = $scope.extractRandom(arr);
-    console.log($scope.suggestion);
-    $scope.seen.push($scope.suggestion);
-    $scope.searching = false;
+    // TODO: Store movie IDs in parent scope and send with tags to prevent server from repeating suggestions
+    $http({method: 'POST', data:'tags='+$scope.$parent.selected.join(','), headers: {'Content-Type': 'application/x-www-form-urlencoded'}, url: 'http://movieshuffler.com/php/suggestion.php'}).success(function(data){
+      $scope.$parent.movies = data;
+      // // Temporarily use fake data to simulate returned array
+      // $scope.$parent.movies = [
+      //   {
+      //     title: "This is the End",
+      //     year: 2013,
+      //     rating: 72,
+      //     trailer: "Yma-g4gTwlE"
+      //   },{
+      //     title: "Twelve Monkeys",
+      //     year: 1995,
+      //     rating: 88,
+      //     trailer: "15s4Y9ffW_o"
+      //   }
+      // ];
+      // Flesh out YouTube URL for all YouTube trailer IDs
+      // for (var i = 0; i < $scope.$parent.movies.length; i++) {
+      //   console.log('Iteration ' + i);
+      //   console.log($scope.$parent.movies[i].title);
+        $scope.$parent.movies.trailer = $sce.trustAsResourceUrl('http://www.youtube.com/embed/'+$scope.$parent.movies.trailer+'?rel=0&amp;showinfo=0');
+      // }
+      // Store movie IDs here
+      // $scope.$parent.ids = $scope.$parent.movies.id;
+      $scope.suggestion = $scope.$parent.movies;
+      $scope.searching = false;
+    });
   };
 
-  // Pick one movie to suggest
-  $scope.suggestion = $scope.pickOne($scope.movies);
+  $scope.getMovie($scope.$parent.random);
 
   $scope.clearActive = function() {
-    // Is clearing necessary? Won't tags be reloaded from the server upon returning to start page?
-    // for (var i = 0; i < $scope.random.length; i++) {
-    //   if ($scope.random[i].active) {
-    //     $scope.random[i].active = false;
-    //   }
-    // }
-    $scope.random = [];
-    // Return to start page
+    $scope.$parent.random = [];
     $location.path('/');
   };
 }]);

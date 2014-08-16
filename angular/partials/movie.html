@@ -9,7 +9,7 @@
 	</div>
 	<p>{{suggestion.rating}}% liked this movie on Rotten Tomatoes.</p>
 	<div class="buttons">
-		<a id="again" class="button" ng-click="pickOne(movies)">Show Another</a>
+		<a id="again" class="button" ng-click="getMovie(random)" ng-disabled="disabled">Show Another</a>
 		<a id="back" class="button" ng-click="clearActive()">Return to Shuffler</a>
 	</div>
 </div>

@@ -8,9 +8,16 @@ if($mysqli->connect_errno) {
 }
 
 $tagList = $_POST['tags'];
+if (isset($_POST['ids'])) {
+  $idList = $_POST['ids'];
+}
 
 $tags = explode(',', $tagList); // Make an array of tags
+if (isset($idList)) {
+  $ids = explode(',', $idList); // Make an array of previously suggested movie ids
+}
 $safe = array();
+
 for ($i = 0; $i < count($tags); $i++) {
 	$stmt = $mysqli->prepare("SELECT `ID` FROM `tags` WHERE `Tag` = ?");
   $stmt->bind_param("s", $tags[$i]);
@@ -50,7 +57,17 @@ while ($count) {
 }
 $year = null; // Fix for the issue where $year was mysteriously not showing up
 while (!$year) {
-  if ($midArray) {
+  if (count($midArray)) {
+    if (isset($ids) && count($ids) < count($midArray)) {
+      for ($j = 0; $j < count($ids); $j++) {
+        if (count($midArray)) {
+          $pos = array_search($ids[$j], $midArray);
+          if ($pos || $pos >= 0) {
+            array_splice($midArray, $pos, 1);
+          }
+        }
+      }
+    }
     shuffle($midArray);
     $choice = $midArray[0];
   } else {
@@ -71,7 +88,7 @@ while (!$year) {
   }
   $stmt->close();
 }
-$json = '{"title":"' . $title . '","year":' . $year . ',"rating":' . rotten($RTID) . ',"trailer":"' . youtube($title, $year) . '","tags":"' . $tagList . '"}';
+$json = '{"id":' . $choice . ',"title":"' . $title . '","year":' . $year . ',"rating":' . rotten($RTID) . ',"trailer":"' . youtube($title, $year) . '","tags":"' . $tagList . '"}';
 echo $json;
 
 function rotten($id) {

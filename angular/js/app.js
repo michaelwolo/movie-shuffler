@@ -20,6 +20,45 @@ shuffler.config([ '$routeProvider', '$locationProvider', function ($routeProvide
       $locationProvider.html5Mode(true);
 }]);
 
+shuffler.factory('ArrayService', function () {
+	return {
+	  extractRandom: function (arr) {
+	    var index = Math.floor(Math.random() * arr.length)
+	      , result = arr[index];
+	    arr.splice(index, 1);
+	    return result;
+	  },
+	  balance: function (arr) {
+	  	var num = Math.floor(arr.length / 2)
+	  	  , shortest = []
+	  	  , balanced = []
+      shortest = [].concat((arr.sort(function (a, b) { return a.length - b.length; })).splice(0,num));
+      while (shortest.length || arr.length) {
+        if (shortest.length)
+          balanced.push(this.extractRandom(shortest));
+        if (arr.length)
+          balanced.push(this.extractRandom(arr));
+      }
+      return balanced;
+	  },
+	  extractActive: function (current, selected) {
+	  	for (var j = current.length-1; j >= 0; j--) {
+	      if (current[j].active) {
+	        selected.unshift(current[j]);
+	        current.splice(j, 1);
+	      }
+	    }
+	  },
+	  getTotal: function (arr) {
+	  	var total = 0;
+	  	for (var i = 0; i < arr.length; i++) {
+	  		total += arr[i].name.length;
+	  	}
+	  	return total;
+	  }
+	}
+});
+
 shuffler.directive('tagbox', [ '$window', function ($window) {
 	return {
 		restrict: 'E',

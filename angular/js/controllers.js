@@ -7,16 +7,10 @@ shufflerControllers.controller('ShufflerController', [ '$scope', '$http', '$wind
   $scope.selected = [];
   $scope.movies = [];
 
-  // TODO: Move extractRandom to Angular service
-  $scope.extractRandom = function (arr) {
-    var index = Math.floor(Math.random() * arr.length)
-      , result = arr[index];
-    arr.splice(index, 1);
-    return result;
-  };
 }]);
 
-shufflerControllers.controller('StartController', [ '$scope', '$http', '$location', '$sce', function ($scope, $http, $location, $sce) {
+shufflerControllers.controller('StartController', [ '$scope', '$http', '$location', '$sce', 'ArrayService', function ($scope, $http, $location, $sce, ArrayService) {
+  $scope.num = 17;
   $scope.shown = [];
 
   $scope.loadTags = function () {
@@ -96,79 +90,54 @@ shufflerControllers.controller('StartController', [ '$scope', '$http', '$locatio
         }
       ];
       var total = 0
-        , i = 0
-        , num = 0
         , length = 17
-        , shortest = []
-        , temp = [];
+        , batch = [];
       for (i = 0; i < length; i++) {
-        temp.push($scope.$parent.array[0]);
+        batch.push($scope.$parent.array[0]);
         total += $scope.$parent.array[0].name.length;
         $scope.$parent.array.splice(0, 1);
       }
       $scope.size = Math.round(100-8.8*(7.5-(total / length)));
-      num = Math.floor(temp.length / 2);
-      shortest = [].concat((temp.sort(function (a, b) { return a.length - b.length; })).splice(0,num));
-      while (shortest.length || temp.length) {
-        if (shortest.length)
-          $scope.$parent.random.push($scope.extractRandom(shortest));
-        if (temp.length)
-          $scope.$parent.random.push($scope.extractRandom(temp));
-      }
+      $scope.$parent.random = ArrayService.balance(batch);
     });
   };
 
   $scope.loadTags();
 
   $scope.shuffleTags = function () {
-    // TODO: Move tagBalancer to separate service
-    // TODO: Move tagShuffler to separate service
     var total = 0
       , index = 0
-      , num = 0
-      , required = 0
-      , length = 17
-      , shortest = []
-      , temp = []
+      , remaining = 0
+      , rand = {}
+      , batch = []
       , selected = [];
-    for (var j = $scope.$parent.random.length-1; j >= 0; j--) {
-      if ($scope.$parent.random[j].active) {
-        selected.unshift($scope.$parent.random[j]);
-        total += $scope.$parent.random[j].name.length;
-        $scope.$parent.random.splice(j, 1);
-      }
-    }
-    required = length - selected.length;
-    for (var i = 0; i < required; i++) {
+    ArrayService.extractActive($scope.$parent.random, selected);
+    remaining = $scope.num - selected.length;
+    for (var i = 0; i < remaining; i++) {
       if (!$scope.$parent.array.length) {
         if (!$scope.shown.length) {
-          index = Math.floor(Math.random()*$scope.$parent.random.length);
-          $scope.$parent.array.push($scope.$parent.random[index]);
-          $scope.$parent.random.splice(index, 1);
+          // Will only occur if the total number of tags is less than 2x visible number (aka <34)
+          // Will never happen for Movie Shuffler (why am I doing this?)
+          rand = ArrayService.extractRandom($scope.$parent.random);
         } else {
           $scope.$parent.array = $scope.shown;
           $scope.shown = [];
         }
       }
-      index = Math.floor(Math.random()*$scope.$parent.array.length);
-      temp.push($scope.$parent.array[index]);
-      total += $scope.$parent.array[index].name.length;
-      $scope.$parent.array.splice(index, 1);
+      if ($scope.$parent.array.length) {
+        rand = ArrayService.extractRandom($scope.$parent.array);
+      }
+      batch.push(rand);
     }
     $scope.shown.push.apply($scope.shown, $scope.$parent.random);
-    $scope.size = Math.round(100-8.8*(7.5-(total / length)));
-    num = Math.floor(temp.length / 2);
-    shortest = [].concat((temp.sort(function (a, b) { return a.length - b.length; })).splice(0,num));
-    $scope.$parent.random = [];
-    while (shortest.length || temp.length) {
-      if (shortest.length)
-        $scope.$parent.random.push($scope.extractRandom(shortest));
-      if (temp.length)
-        $scope.$parent.random.push($scope.extractRandom(temp));
-    }
+    $scope.$parent.random = ArrayService.balance(batch);
+    // Prepend previously selected tags to new visible batch
     if (selected.length) {
       $scope.$parent.random.unshift.apply($scope.$parent.random, selected);
     }
+    // Use average tag length to determine tagbox width
+    total = ArrayService.getTotal($scope.$parent.random);
+    $scope.size = Math.round(100-8.8*(7.5-(total / length)));
   };
 
   $scope.submitTags = function (array) {

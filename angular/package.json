@@ -12,6 +12,9 @@
     "grunt-contrib-cssmin": "*",
     "grunt-contrib-sass": "^0.7.3",
     "grunt-contrib-watch": "^0.6.1",
-    "grunt-open": "^0.2.3"
+    "grunt-open": "^0.2.3",
+    "karma": "^0.12.22",
+    "karma-chrome-launcher": "^0.1.4",
+    "karma-jasmine": "^0.1.5"
   }
 }
